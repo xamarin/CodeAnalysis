@@ -1,0 +1,14 @@
+queue: Hosted VS2017
+
+steps:
+
+- checkout: self
+  clean: true
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Artifact
+  inputs:
+    PathtoPublish: $(Build.ArtifactStagingDirectory)
+    ArtifactName: out
+    ArtifactType: Container
+  condition: always()
