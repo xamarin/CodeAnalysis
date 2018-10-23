@@ -15,6 +15,7 @@
   <PropertyGroup>
     <GitSkipCache Condition="'$(CI)' == 'true'">true</GitSkipCache>
     <Configuration Condition="'$(Configuration)' == '' and '$(CI)' == 'true'">Release</Configuration>
+    <DeployExtension Condition="'$(DeployExtension)' == '' and '$(CI)' == 'true'">false</DeployExtension>
   </PropertyGroup>
 
   <!-- Redeclared by GitInfo -->
