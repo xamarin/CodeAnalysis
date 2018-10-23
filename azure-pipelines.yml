@@ -9,7 +9,7 @@ steps:
   displayName: Restore
   inputs:
     solution: Xamarin.CodeAnalysis.sln
-    msbuildArguments: /t:Restore /m
+    msbuildArguments: /t:Restore /bl:"$(Build.ArtifactStagingDirectory)\restore.binlog" /m
 
 - task: MSBuild@1
   displayName: Build
