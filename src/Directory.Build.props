@@ -1,0 +1,27 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <!-- We always target a single framework, so we don't need the added subdir -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DefaultItemExcludes>*.binlog</DefaultItemExcludes>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(CI)' == ''">
+    <CI>false</CI>
+    <CI Condition="'$(TF_BUILD)' == 'true'">true</CI>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GitSkipCache Condition="'$(CI)' == 'true'">true</GitSkipCache>
+    <Configuration Condition="'$(Configuration)' == '' and '$(CI)' == 'true'">Release</Configuration>
+  </PropertyGroup>
+
+  <!-- Redeclared by GitInfo -->
+  <Target Name="GitVersion" />
+
+  <ItemGroup>
+    <PackageReference Include="GitInfo" />
+  </ItemGroup>
+
+</Project>

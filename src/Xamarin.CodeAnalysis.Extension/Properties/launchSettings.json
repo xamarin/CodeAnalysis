@@ -1,0 +1,9 @@
+﻿{
+  "profiles": {
+    "Debug": {
+      "commandName": "Executable",
+      "executablePath": "$(VsInstallRoot)\\Common7\\IDE\\devenv.exe",
+      "commandLineArgs": "/rootSuffix $(VSSDKTargetPlatformRegRootSuffix)"
+    }
+  }
+}

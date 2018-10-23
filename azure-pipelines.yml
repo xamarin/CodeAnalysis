@@ -5,6 +5,26 @@ steps:
 - checkout: self
   clean: true
 
+- task: MSBuild@1
+  displayName: Restore
+  inputs:
+    solution: Xamarin.CodeAnalysis.sln
+    msbuildArguments: /t:Restore /m
+
+- task: MSBuild@1
+  displayName: Build
+  inputs:
+    solution: Xamarin.CodeAnalysis.sln
+    msbuildArguments: /bl:"$(Build.ArtifactStagingDirectory)\build.binlog" /p:TargetVsixContainer=$(Build.ArtifactStagingDirectory)\Xamarin.CodeAnalysis.vsix /m
+
+- task: VSTest@2
+  displayName: Test
+  inputs:
+    testAssemblyVer2: src\*\bin\*\*.Tests.dll
+    runInParallel: 'true'
+    codeCoverageEnabled: 'true'
+    publishRunAttachments: 'true'
+
 - task: PublishBuildArtifacts@1
   displayName: Publish Artifact
   inputs:

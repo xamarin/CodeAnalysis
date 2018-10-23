@@ -1,0 +1,84 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.1" />
+
+  <PropertyGroup>
+    <Dev>$(VisualStudioVersion.Substring(0, 2))</Dev>
+    <TargetFramework>net46</TargetFramework>
+    <TargetFramework Condition="'$(VisualStudioVersion)' == '16.0'">net472</TargetFramework>
+    <Platforms>AnyCPU;x86</Platforms>
+    <Platform>x86</Platform>
+
+    <RootNamespace>Xamarin.CodeAnalysis</RootNamespace>
+
+    <!--<GeneratePkgDefFile>false</GeneratePkgDefFile>-->
+    <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <DefaultIncludeOutputGroupsInVSIX>BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;GetCopyToOutputDirectoryItems;SatelliteDllsProjectOutputGroup</DefaultIncludeOutputGroupsInVSIX>
+
+    <TargetVsixContainerName>Xamarin.CodeAnalysis.vsix</TargetVsixContainerName>
+
+    <IsExperimental>true</IsExperimental>
+    <IsSystemComponent>false</IsSystemComponent>
+
+    <VsixVersion>42.42.42</VsixVersion>
+
+    <RestoreSources>$(RestoreSources);https://api.nuget.org/v3/index.json;https://nugets.blob.core.windows.net/xvssdk/index.json</RestoreSources>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(CI)' == 'true'">
+    <IsProductComponent>true</IsProductComponent>
+    <IsExperimental>false</IsExperimental>
+    <IsSystemComponent>true</IsSystemComponent>
+    <ExtensionInstallationRoot>Extensions</ExtensionInstallationRoot>
+    <ExtensionInstallationFolder>Xamarin\Forms.Previewer</ExtensionInstallationFolder>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" />
+    <PackageReference Include="MSBuilder.ThisAssembly.Metadata" />
+    <PackageReference Include="Xamarin.VSSDK.BuildTools" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Xamarin.CodeAnalysis.Completion\Xamarin.CodeAnalysis.Completion.csproj">
+      <Name>Xamarin.CodeAnalysis.Completion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj">
+      <Name>Xamarin.CodeAnalysis</Name>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator></Generator>
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+    </EmbeddedResource>
+    <Resource Include="Properties\ICN_Xamarin.ico" />
+  </ItemGroup>
+
+  <Target Name="GetVsixVersion" DependsOnTargets="SetVersions" Returns="$(VsixVersion)">
+    <PropertyGroup>
+      <VsixVersion Condition="'$(CI)' == 'true'">$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)</VsixVersion>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="AppendVsixVersionToTargetVsixContainer" BeforeTargets="CreateVsixContainer" DependsOnTargets="GetVsixVersion">
+    <PropertyGroup>
+      <TargetVsixContainer>$([System.IO.Path]::ChangeExtension('$(TargetVsixContainer)', '$(VsixVersion).vsix'))</TargetVsixContainer>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="IncludeSymbolsFromProjectReferences" BeforeTargets="GetVsixSourceItems">
+    <!-- For any project references that are set to copy local ('Private' property != false), add the output groups for project references that are not set -->
+    <ItemGroup>
+      <ProjectReferenceWithConfiguration Condition="'%(ProjectReferenceWithConfiguration.Private)' != 'false' and '%(ProjectReferenceWithConfiguration.IncludeOutputGroupsInVSIX)' == ''">
+        <IncludeOutputGroupsInVSIX>$(DefaultIncludeOutputGroupsInVSIX)</IncludeOutputGroupsInVSIX>
+      </ProjectReferenceWithConfiguration>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="IsExperimental" Returns="$(IsExperimental)" />
+  <Target Name="IsSystemComponent" Returns="$(IsSystemComponent)" />
+
+</Project>
