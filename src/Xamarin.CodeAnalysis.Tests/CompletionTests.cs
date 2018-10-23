@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -35,7 +36,7 @@ public class Foo
                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                .WithMetadataReferences(new MetadataReference[]
                {
-                   MetadataReference.CreateFromFile(Environment.ExpandEnvironmentVariables($@"%USERPROFILE%\.nuget\packages\netstandard.library\{ThisAssembly.Metadata.NETStandardPackageVersion}\build\netstandard2.0\ref\netstandard.dll")),
+                   MetadataReference.CreateFromFile(ThisAssembly.Metadata.NETStandardReference),
                    MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.dll"),
                    MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.Completion.dll"),
                })

@@ -18,17 +18,9 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
-      <_Parameter1>NETStandardPackageVersion</_Parameter1>
-      <_Parameter2>$(BundledNETStandardPackageVersion)</_Parameter2>
+      <_Parameter1>NETStandardReference</_Parameter1>
+      <_Parameter2>$(MSBuildBinPath)\ref\netstandard.dll</_Parameter2>
     </AssemblyAttribute>
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="NETStandard.proj" />
-  </ItemGroup>
-
-  <Target Name="RestoreNETStandard" AfterTargets="Restore">
-    <MSBuild Projects="NETStandard.proj" Targets="Restore" />
-  </Target>
 
 </Project>
