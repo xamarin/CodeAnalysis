@@ -31,6 +31,8 @@
     <IsSystemComponent>true</IsSystemComponent>
     <ExtensionInstallationRoot>Extensions</ExtensionInstallationRoot>
     <ExtensionInstallationFolder>Xamarin\Forms.Previewer</ExtensionInstallationFolder>
+    <DeployExtension>false</DeployExtension>
+    <CreateVsixContainer>true</CreateVsixContainer>
   </PropertyGroup>
 
   <ItemGroup>
