@@ -20,12 +20,15 @@
     <IsExperimental>true</IsExperimental>
     <IsSystemComponent>false</IsSystemComponent>
 
+    <!--<CreateVsixContainer>true</CreateVsixContainer>-->
     <VsixVersion>42.42.42</VsixVersion>
+    <DefaultItemExcludes>*.targets</DefaultItemExcludes>
 
     <RestoreSources>$(RestoreSources);https://api.nuget.org/v3/index.json;https://nugets.blob.core.windows.net/xvssdk/index.json</RestoreSources>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(CI)' == 'true'">
+  
+  
+  <PropertyGroup Condition="$(CI)">
     <IsProductComponent>true</IsProductComponent>
     <IsExperimental>false</IsExperimental>
     <IsSystemComponent>true</IsSystemComponent>
@@ -59,9 +62,16 @@
     <Resource Include="Properties\ICN_Xamarin.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="*.targets" IncludeInVSIX="true" VSIXSubPath="Xamarin" SymLink="true" />
+    <Content Update="Xamarin.CodeAnalysis.ImportAfter.targets" VSIXSubPath="Current\Microsoft.Common.Targets\ImportAfter" />
+    <Content Update="@(Content)" Condition="$(CI)" InstallRoot="MSBuild" />
+    <UpToDateCheckInput Include="@(Content)" />
+  </ItemGroup>
+
   <Target Name="GetVsixVersion" DependsOnTargets="SetVersions" Returns="$(VsixVersion)">
     <PropertyGroup>
-      <VsixVersion Condition="'$(CI)' == 'true'">$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)</VsixVersion>
+      <VsixVersion Condition="$(CI)">$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)</VsixVersion>
     </PropertyGroup>
   </Target>
 
@@ -82,5 +92,72 @@
 
   <Target Name="IsExperimental" Returns="$(IsExperimental)" />
   <Target Name="IsSystemComponent" Returns="$(IsSystemComponent)" />
+
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <BuildDependsOn Condition="!$(CI)">
+      $(BuildDependsOn);
+      SymLink
+    </BuildDependsOn>
+  </PropertyGroup>
+
+  <Target Name="SymLink" DependsOnTargets="IsAdministrator;CollectLinkItems;ReplaceLinkItems" />
+  
+  <Target Name="IsAdministrator">
+    <IsAdministrator>
+      <Output TaskParameter="Result" PropertyName="IsAdministrator" />
+    </IsAdministrator>
+    <Warning Text="Current user isn't an Administrator, so MSBuild artifacts won't be symlinked." Condition="'$(IsAdministrator)' == 'false'" />
+  </Target>
+  
+  <ItemDefinitionGroup>
+    <MkLinkCandidate>
+      <Exists>false</Exists>
+      <IsSymLink>false</IsSymLink>
+    </MkLinkCandidate>
+    <VSIXSourceItem>
+      <VSIXSubPath />
+      <SymLink />
+    </VSIXSourceItem>
+  </ItemDefinitionGroup>
+    
+  <Target Name="CollectLinkItems" DependsOnTargets="IsAdministrator;GetVsixDeploymentPath;GetVsixSourceItems" Condition="'$(IsAdministrator)' == 'true'">
+    <ItemGroup>
+      <MkLinkCandidate Include="@(VSIXSourceItem -> '$(MSBuildExtensionsPath)\%(VSIXSubPath)\%(Filename)%(Extension)')" Condition="'%(SymLink)' == 'true'">
+        <LinkTarget>$(VsixDeploymentPath)\%(VSIXSubPath)\%(Filename)%(Extension)</LinkTarget>
+      </MkLinkCandidate>
+      <MkLinkCandidate Condition="Exists('%(FullPath)')">
+        <IsSymLink Condition="$([MSBuild]::BitwiseAnd(1024, $([System.IO.File]::GetAttributes('%(FullPath)')))) == '1024'">true</IsSymLink>
+        <Exists>true</Exists>
+      </MkLinkCandidate>
+      <MkLinkSource Include="@(MkLinkCandidate)" Condition="!Exists('%(FullPath)') Or '%(IsSymLink)' == 'false'" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ReplaceLinkItems" Condition="'@(MkLinkSource)' != '' And '$(IsAdministrator)' == 'true'">
+    <Message Text="In $(Configuration) builds, we attempt to symlink MSBuild files with current project output." Importance="high" />
+    <ItemGroup>
+      <_FilesToDelete Include="@(MkLinkSource -&gt; WithMetadataValue('Exists', 'true'))" />
+    </ItemGroup>
+    <Exec Command='del "%(_FilesToDelete.FullPath)"' EchoOff="true" Condition="'@(_FilesToDelete)' != ''" />
+    <Exec Command='mklink "%(MkLinkSource.Identity)" "%(MkLinkSource.LinkTarget)"' 
+          ConsoleToMSBuild="true" 
+          EchoOff="true" 
+      Condition="Exists('%(MkLinkSource.RootDir)%(MkLinkSource.Directory)')">
+      <Output TaskParameter="ConsoleOutput" ItemName="MkLinked" />
+    </Exec>
+    <Message Importance="high" Text="%(MkLinked.Identity)" Condition="'@(MkLinked)' != ''" />
+  </Target>
+  
+  <UsingTask TaskName="IsAdministrator" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Result ParameterType="System.Boolean" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.Security.Principal" />
+      <Code Type="Fragment" Language="cs">
+        Result = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+      </Code>
+    </Task>
+  </UsingTask>
 
 </Project>

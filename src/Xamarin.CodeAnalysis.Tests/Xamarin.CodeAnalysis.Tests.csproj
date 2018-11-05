@@ -3,6 +3,7 @@
 
   <PropertyGroup>
     <TargetFramework>net46</TargetFramework>
+    <TargetFramework Condition="'$(VisualStudioVersion)' == '16.0'">net472</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

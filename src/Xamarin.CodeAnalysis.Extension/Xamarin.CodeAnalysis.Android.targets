@@ -1,0 +1,7 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <AdditionalFiles Include="@(AndroidResource -> WithMetadataValue('RelativeDir', 'Resources\values\'))" />
+  </ItemGroup>
+  
+</Project>

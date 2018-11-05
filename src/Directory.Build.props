@@ -13,8 +13,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <GitSkipCache Condition="'$(CI)' == 'true'">true</GitSkipCache>
-    <Configuration Condition="'$(Configuration)' == '' and '$(CI)' == 'true'">Release</Configuration>
+    <GitSkipCache Condition="$(CI)">true</GitSkipCache>
+    <Configuration Condition="'$(Configuration)' == '' and $(CI)">Release</Configuration>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
   </PropertyGroup>
 
   <!-- Redeclared by GitInfo -->
