@@ -21,8 +21,4 @@
   <!-- Redeclared by GitInfo -->
   <Target Name="GitVersion" />
 
-  <ItemGroup>
-    <PackageReference Include="GitInfo" />
-  </ItemGroup>
-
 </Project>
