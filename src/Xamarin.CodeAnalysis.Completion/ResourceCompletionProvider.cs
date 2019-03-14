@@ -22,12 +22,6 @@ namespace Xamarin.CodeAnalysis
     {
         private static readonly CompletionItemRules StandardCompletionRules = CompletionItemRules.Default.WithSelectionBehavior(CompletionItemSelectionBehavior.SoftSelection);
 
-        public override bool ShouldTriggerCompletion(SourceText text, int caretPosition, CompletionTrigger trigger, OptionSet options)
-        {
-            // TODO: should trigger if we're inside a string
-            return base.ShouldTriggerCompletion(text, caretPosition, trigger, options);
-        }
-
         public override Task<CompletionDescription> GetDescriptionAsync(Document document, CompletionItem item, CancellationToken cancellationToken)
         {
             // TODO: get the actual xml file location.
@@ -36,7 +30,14 @@ namespace Xamarin.CodeAnalysis
 
         public override Task<CompletionChange> GetChangeAsync(Document document, CompletionItem item, char? commitKey, CancellationToken cancellationToken)
         {
-            // Determine change to insert
+            if (item.Properties.TryGetValue("Start", out var start) && 
+                int.TryParse(start, out var s) && 
+                item.Properties.TryGetValue("Length", out var length) && 
+                int.TryParse(length, out var l))
+            {
+                return Task.FromResult(CompletionChange.Create(new TextChange(new TextSpan(s, l), item.DisplayText)));
+            }
+
             return base.GetChangeAsync(document, item, commitKey, cancellationToken);
         }
 
@@ -67,6 +68,7 @@ namespace Xamarin.CodeAnalysis
                     var name = argument.NameEquals.Name.ToString();
                     // TODO: consider resource files some other way?
                     var valueDocs = document.Project.AdditionalDocuments.Where(doc => isResourceValue.IsMatch(doc.FilePath));
+                    var projectPath = string.IsNullOrEmpty(document.Project.FilePath) ? null : Path.GetDirectoryName(document.Project.FilePath);
                     var elementName = "string";
                     if (name == "Theme")
                         elementName = "style";
@@ -104,12 +106,21 @@ namespace Xamarin.CodeAnalysis
                                 {
                                     if (reader.LocalName == elementName && reader.GetAttribute("name") is string id)
                                     {
-                                        completionContext.AddItem(CompletionItem.Create($"@{reader.LocalName}/{id}",
-                                            tags: ImmutableArray.Create(WellKnownTags.Constant, "Xamarin"),
+                                        completionContext.AddItem(CompletionItem.Create(
+                                            $"@{reader.LocalName}/{id}",
+                                            literal.GetText().ToString(),
+                                            $"@{reader.LocalName}/{id}",
                                             properties: ImmutableDictionary.Create<string, string>()
-                                                .Add("Path", doc.FilePath)
+                                                .Add("Path", string.IsNullOrEmpty(projectPath) ? 
+                                                    doc.FilePath : 
+                                                    doc.FilePath.Replace(projectPath, "").TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
                                                 .Add("Line", ((IXmlLineInfo)reader).LineNumber.ToString())
-                                                .Add("Position", ((IXmlLineInfo)reader).LinePosition.ToString()),
+                                                .Add("Position", ((IXmlLineInfo)reader).LinePosition.ToString())
+                                                // Add the starting quote char to start position
+                                                .Add("Start", (node.Span.Start + 1).ToString())
+                                                // Remove the two quote characters
+                                                .Add("Length", (node.Span.Length - 2).ToString()),
+                                            tags: ImmutableArray.Create(WellKnownTags.Constant, "Xamarin"),
                                             rules: StandardCompletionRules));
                                     }
                                 }
