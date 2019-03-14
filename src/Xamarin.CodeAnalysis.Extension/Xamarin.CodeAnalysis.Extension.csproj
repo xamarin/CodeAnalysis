@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.1" />
+  <Sdk Name="Microsoft.Build.CentralPackageVersions" />
 
   <PropertyGroup>
     <Dev>$(VisualStudioVersion.Substring(0, 2))</Dev>
-    <TargetFramework>net46</TargetFramework>
-    <TargetFramework Condition="'$(VisualStudioVersion)' == '16.0'">net472</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <Platforms>AnyCPU;x86</Platforms>
     <Platform>x86</Platform>
 
@@ -24,7 +23,9 @@
     <VsixVersion>42.42.42</VsixVersion>
     <DefaultItemExcludes>*.targets</DefaultItemExcludes>
 
-    <RestoreSources>$(RestoreSources);https://api.nuget.org/v3/index.json;https://nugets.blob.core.windows.net/xvssdk/index.json</RestoreSources>
+    <RestoreSources>
+      $(RestoreSources);https://api.nuget.org/v3/index.json;https://nugets.blob.core.windows.net/xvssdk/index.json
+    </RestoreSources>
   </PropertyGroup>
   
   
@@ -48,6 +49,7 @@
     <ProjectReference Include="..\Xamarin.CodeAnalysis.Completion\Xamarin.CodeAnalysis.Completion.csproj">
       <Name>Xamarin.CodeAnalysis.Completion</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Xamarin.CodeAnalysis.Remote\Xamarin.CodeAnalysis.Remote.csproj" />
     <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj">
       <Name>Xamarin.CodeAnalysis</Name>
     </ProjectReference>
@@ -138,11 +140,8 @@
     <ItemGroup>
       <_FilesToDelete Include="@(MkLinkSource -&gt; WithMetadataValue('Exists', 'true'))" />
     </ItemGroup>
-    <Exec Command='del "%(_FilesToDelete.FullPath)"' EchoOff="true" Condition="'@(_FilesToDelete)' != ''" />
-    <Exec Command='mklink "%(MkLinkSource.Identity)" "%(MkLinkSource.LinkTarget)"' 
-          ConsoleToMSBuild="true" 
-          EchoOff="true" 
-      Condition="Exists('%(MkLinkSource.RootDir)%(MkLinkSource.Directory)')">
+    <Exec Command="del &quot;%(_FilesToDelete.FullPath)&quot;" EchoOff="true" Condition="'@(_FilesToDelete)' != ''" />
+    <Exec Command="mklink &quot;%(MkLinkSource.Identity)&quot; &quot;%(MkLinkSource.LinkTarget)&quot;" ConsoleToMSBuild="true" EchoOff="true" Condition="Exists('%(MkLinkSource.RootDir)%(MkLinkSource.Directory)')">
       <Output TaskParameter="ConsoleOutput" ItemName="MkLinked" />
     </Exec>
     <Message Importance="high" Text="%(MkLinked.Identity)" Condition="'@(MkLinked)' != ''" />

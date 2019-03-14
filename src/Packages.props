@@ -1,11 +1,18 @@
 ﻿<Project>
 
+  <PropertyGroup>
+    <RoslynVersion>3.0.0-beta4-19162-07</RoslynVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <GlobalPackageReference Include="GitInfo" Version="[2.0.18]" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.CSharp.Features" Version="[2.10.0]" />
+    <PackageReference Update="Microsoft.CodeAnalysis.Workspaces.Common" Version="[$(RoslynVersion)]" />
+    <PackageReference Update="Microsoft.CodeAnalysis.Remote.ServiceHub" Version="[$(RoslynVersion)]" />
+    <PackageReference Update="Microsoft.CodeAnalysis.Remote.Workspaces" Version="[$(RoslynVersion)]" />
+    <PackageReference Update="Microsoft.CodeAnalysis.CSharp.Features" Version="[$(RoslynVersion)]" />
     <PackageReference Update="Microsoft.VSSDK.BuildTools" Version="[15.8.3252]" />
     <PackageReference Update="Xamarin.VSSDK.BuildTools" Version="[0.3.0-alpha.17]" />
     <PackageReference Update="MSBuilder.ThisAssembly.Metadata" Version="[0.1.3]" />

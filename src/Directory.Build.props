@@ -5,6 +5,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <DefaultItemExcludes>*.binlog</DefaultItemExcludes>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)xamarin.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(CI)' == ''">
