@@ -8,13 +8,13 @@ steps:
 - task: MSBuild@1
   displayName: Restore
   inputs:
-    solution: Xamarin.CodeAnalysis.sln
+    solution: src\Xamarin.CodeAnalysis.sln
     msbuildArguments: /t:Restore /bl:"$(Build.ArtifactStagingDirectory)\restore.binlog" /m
 
 - task: MSBuild@1
   displayName: Build
   inputs:
-    solution: Xamarin.CodeAnalysis.sln
+    solution: src\Xamarin.CodeAnalysis.sln
     msbuildArguments: /bl:"$(Build.ArtifactStagingDirectory)\build.binlog" /p:TargetVsixContainer=$(Build.ArtifactStagingDirectory)\Xamarin.CodeAnalysis.vsix /m
 
 - task: VSTest@2
