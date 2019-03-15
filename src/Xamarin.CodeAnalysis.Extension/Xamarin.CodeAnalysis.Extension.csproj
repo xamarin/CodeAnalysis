@@ -22,10 +22,6 @@
     <!--<CreateVsixContainer>true</CreateVsixContainer>-->
     <VsixVersion>42.42.42</VsixVersion>
     <DefaultItemExcludes>*.targets</DefaultItemExcludes>
-
-    <RestoreSources>
-      $(RestoreSources);https://api.nuget.org/v3/index.json;https://nugets.blob.core.windows.net/xvssdk/index.json
-    </RestoreSources>
   </PropertyGroup>
   
   
