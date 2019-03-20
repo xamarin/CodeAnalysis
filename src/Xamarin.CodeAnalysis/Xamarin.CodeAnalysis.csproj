@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GuiLabs.Language.Xml" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" />
+    <InternalsVisibleTo Include="Xamarin.CodeAnalysis.Tests" />
   </ItemGroup>
 
 </Project>

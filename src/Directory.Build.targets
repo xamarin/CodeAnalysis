@@ -56,4 +56,6 @@
     </ItemGroup>
   </Target>
 
+  <Import Project="GenerateInternalsVisibleTo.targets" />
+
 </Project>

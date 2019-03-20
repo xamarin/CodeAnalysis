@@ -38,7 +38,9 @@ public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemS
                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                .WithMetadataReferences(new MetadataReference[]
                {
+#pragma warning disable CS0436 // Type conflicts with imported type
                    MetadataReference.CreateFromFile(ThisAssembly.Metadata.NETStandardReference),
+#pragma warning restore CS0436 // Type conflicts with imported type
                    MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.dll"),
                    MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.Completion.dll"),
                })
@@ -147,7 +149,9 @@ public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemS
                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                .WithMetadataReferences(new MetadataReference[]
                {
+#pragma warning disable CS0436 // Type conflicts with imported type
                    MetadataReference.CreateFromFile(ThisAssembly.Metadata.NETStandardReference),
+#pragma warning restore CS0436 // Type conflicts with imported type
                    MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.dll"),
                    MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.Completion.dll"),
                })
@@ -192,6 +196,14 @@ public class Foo
         Console.`WriteLine("""");
     }
 }")]
+        [InlineData(@"using System;
+public class Foo 
+{
+    public void Do() 
+    {
+        Console.WriteLine(""`"");
+    }
+}")]
         [InlineData(@"using System.ComponentModel;
 [Description(""`"")]
 public class Foo 
@@ -212,7 +224,9 @@ public class Foo
                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                .WithMetadataReferences(new MetadataReference[]
                {
+#pragma warning disable CS0436 // Type conflicts with imported type
                    MetadataReference.CreateFromFile(ThisAssembly.Metadata.NETStandardReference),
+#pragma warning restore CS0436 // Type conflicts with imported type
                    MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.dll"),
                    MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.Completion.dll"),
                })

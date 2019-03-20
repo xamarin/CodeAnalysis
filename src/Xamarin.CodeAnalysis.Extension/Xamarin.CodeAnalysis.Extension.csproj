@@ -45,7 +45,6 @@
     <ProjectReference Include="..\Xamarin.CodeAnalysis.Completion\Xamarin.CodeAnalysis.Completion.csproj">
       <Name>Xamarin.CodeAnalysis.Completion</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.CodeAnalysis.Remote\Xamarin.CodeAnalysis.Remote.csproj" />
     <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj">
       <Name>Xamarin.CodeAnalysis</Name>
     </ProjectReference>

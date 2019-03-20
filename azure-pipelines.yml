@@ -5,6 +5,11 @@ steps:
 - checkout: self
   clean: true
 
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core SDK 3.0.100-preview3-010431'
+  inputs:
+    version: 3.0.100-preview3-010431
+
 - task: MSBuild@1
   displayName: Restore
   inputs:
