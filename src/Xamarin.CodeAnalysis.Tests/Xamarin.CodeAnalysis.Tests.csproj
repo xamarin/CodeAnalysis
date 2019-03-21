@@ -23,20 +23,15 @@
     </AssemblyAttribute>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="MonoAndroid\*.*" CopyToOutputDirectory="PreserveNewest" IsAssembly="true" />
-  </ItemGroup>
-
-  <Target Name="BeforeResolveAssemblyReferences" BeforeTargets="ResolveAssemblyReferences">
-    <ItemGroup>
-      <NoneAssemblies Include="@(None -> WithMetadataValue('IsAssembly', 'true'))" />
-      <None Remove="@(NoneAssemblies)" />
-    </ItemGroup>
-  </Target>
+  <PropertyGroup>
+    <MonoAndroidRoot>$(VsInstallRoot)\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid</MonoAndroidRoot>
+  </PropertyGroup>
 
   <Target Name="AfterResolveAssemblyReferences" AfterTargets="ResolveAssemblyReferences">
     <ItemGroup>
-      <None Include="@(NoneAssemblies)" />
+      <None Include="$(MonoAndroidRoot)\v8.1\Mono.Android.dll" CopyToOutputDirectory="PreserveNewest" Link="MonoAndroid\Mono.Android.dll" />
+      <None Include="$(MonoAndroidRoot)\v1.0\mscorlib.dll"  CopyToOutputDirectory="PreserveNewest" Link="MonoAndroid\mscorlib.dll" />
+      <None Include="$(MonoAndroidRoot)\v1.0\System.dll"  CopyToOutputDirectory="PreserveNewest" Link="MonoAndroid\System.dll" />
     </ItemGroup>
   </Target>
 

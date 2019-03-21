@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -9,9 +9,10 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Host.Mef;
 using Xunit;
 using static Xamarin.CodeAnalysis.Tests.TestHelpers;
+
+[assembly: CollectionBehavior(CollectionBehavior.CollectionPerClass, DisableTestParallelization = true)]
 
 namespace Xamarin.CodeAnalysis.Tests
 {
@@ -19,14 +20,10 @@ namespace Xamarin.CodeAnalysis.Tests
     {
         [Theory]
         [InlineData(@"using Android.App;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
-using Android.Views;
 
 [Activity(Label = ""Main"", MainLauncher = true)]
-public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
+public class MainActivity : Activity
 {
-    public bool OnNavigationItemSelected(IMenuItem menuItem) => true;
 }
 ", XAA1001StringLiteralToResource.DiagnosticId)]
         public async Task can_get_diagnostics(string code, string diagnosticId)
@@ -35,13 +32,9 @@ public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemS
             var document = workspace
                .AddProject("TestProject", LanguageNames.CSharp)
                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-               .WithMetadataReferences(new MetadataReference[]
-               {
-#pragma warning disable CS0436 // Type conflicts with imported type
-                   MetadataReference.CreateFromFile(ThisAssembly.Metadata.NETStandardReference),
-#pragma warning restore CS0436 // Type conflicts with imported type
-                   MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.dll"),
-               })
+               .WithMetadataReferences(Directory
+                    .EnumerateFiles("MonoAndroid", "*.dll")
+                    .Select(dll => MetadataReference.CreateFromFile(dll)))
                .AddAdditionalDocument("strings.xml", @"<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name='app_name'>TestApp</string>
