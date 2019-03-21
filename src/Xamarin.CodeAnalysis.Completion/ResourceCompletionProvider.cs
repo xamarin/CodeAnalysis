@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.CSharp;
@@ -23,7 +22,7 @@ namespace Xamarin.CodeAnalysis
         public override Task<CompletionDescription> GetDescriptionAsync(Document document, CompletionItem item, CancellationToken cancellationToken)
         {
             // TODO: get the actual xml file location.
-            return Task.FromResult(CompletionDescription.FromText($"{item.Properties["Path"]}({item.Properties["Line"]},{item.Properties["Position"]})"));
+            return Task.FromResult(CompletionDescription.FromText(item.Properties["Summary"]));
         }
 
         public override Task<CompletionChange> GetChangeAsync(Document document, CompletionItem item, char? commitKey, CancellationToken cancellationToken)
@@ -59,74 +58,44 @@ namespace Xamarin.CodeAnalysis
                 node?.Parent?.Parent?.Parent is AttributeSyntax attribute)
             {
                 var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+                var projectPath = string.IsNullOrEmpty(document.Project.FilePath) ? null : Path.GetDirectoryName(document.Project.FilePath);
                 var symbol = semanticModel.GetSymbolInfo(attribute, cancellationToken).Symbol;
                 if (symbol?.ContainingType.ToDisplayString() == "Android.App.ActivityAttribute" || 
                     (symbol == null && attribute.Name.ToString() == "Activity"))
                 {
                     var name = argument.NameEquals.Name.ToString();
-                    // TODO: consider resource files some other way?
-                    var valueDocs = document.Project.AdditionalDocuments.Where(doc => isResourceValue.IsMatch(doc.FilePath));
-                    var projectPath = string.IsNullOrEmpty(document.Project.FilePath) ? null : Path.GetDirectoryName(document.Project.FilePath);
-                    var elementName = "string";
+                    var kind = "string";
                     if (name == "Theme")
-                        elementName = "style";
+                        kind = "style";
 
-                    var strings = new HashSet<string>();
-                    var styles = new HashSet<string>();
-                    var xmlSettings = new XmlReaderSettings
-                    {
-                        IgnoreComments = true,
-                        IgnoreProcessingInstructions = true,
-                        IgnoreWhitespace = true,
-                    };
+                    var compilation = await document.Project.GetCompilationAsync(completionContext.CancellationToken);
+                    var resourceDesignerAttribute = compilation.Assembly.GetAttributes().FirstOrDefault(attr 
+                        => attr.AttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::Android.Runtime.ResourceDesignerAttribute");
 
-                    foreach (var doc in valueDocs)
+                    if (resourceDesignerAttribute != null && resourceDesignerAttribute.ConstructorArguments.Any())
                     {
-                        XmlReader reader = null;
-                        try
+                        var resourceDesigner = compilation.GetTypeByMetadataName((string)resourceDesignerAttribute.ConstructorArguments.First().Value);
+                        if (resourceDesigner != null)
                         {
-                            if (File.Exists(doc.FilePath))
+                            var resourceSymbol = resourceDesigner.GetTypeMembers().FirstOrDefault(x => x.Name.Equals(kind, StringComparison.OrdinalIgnoreCase));
+                            if (resourceSymbol != null)
                             {
-                                reader = XmlReader.Create(doc.FilePath, xmlSettings);
-                            }
-                            else
-                            {
-                                // In tests, the file doesn't exist.
-                                var writer = new StringWriter();
-                                (await doc.GetTextAsync(cancellationToken)).Write(writer, cancellationToken);
-                                reader = XmlReader.Create(new StringReader(writer.ToString()), xmlSettings);
-                            }
-
-                            if (reader.MoveToContent() == XmlNodeType.Element)
-                            {
-                                // TODO: cache already parsed results as long as the text version remains the same?
-                                while (reader.Read())
+                                foreach (var member in resourceSymbol.GetMembers().Where(x => x.Kind == SymbolKind.Field))
                                 {
-                                    if (reader.LocalName == elementName && reader.GetAttribute("name") is string id)
-                                    {
-                                        completionContext.AddItem(CompletionItem.Create(
-                                            $"@{reader.LocalName}/{id}",
-                                            literal.GetText().ToString(),
-                                            $"@{reader.LocalName}/{id}",
-                                            properties: ImmutableDictionary.Create<string, string>()
-                                                .Add("Path", string.IsNullOrEmpty(projectPath) ? 
-                                                    doc.FilePath : 
-                                                    doc.FilePath.Replace(projectPath, "").TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
-                                                .Add("Line", ((IXmlLineInfo)reader).LineNumber.ToString())
-                                                .Add("Position", ((IXmlLineInfo)reader).LinePosition.ToString())
-                                                // Add the starting quote char to start position
-                                                .Add("Start", (node.Span.Start + 1).ToString())
-                                                // Remove the two quote characters
-                                                .Add("Length", (node.Span.Length - 2).ToString()),
-                                            tags: ImmutableArray.Create(WellKnownTags.Constant, "Xamarin"),
-                                            rules: StandardCompletionRules));
-                                    }
+                                    completionContext.AddItem(CompletionItem.Create(
+                                        $"@{kind}/{member.Name}",
+                                        literal.GetText().ToString(),
+                                        $"@{kind}/{member.Name}",
+                                        properties: ImmutableDictionary.Create<string, string>()
+                                            .Add("Summary", member.GetDocumentationCommentXml())
+                                            // Add the starting quote char to start position
+                                            .Add("Start", (node.Span.Start + 1).ToString())
+                                            // Remove the two quote characters
+                                            .Add("Length", (node.Span.Length - 2).ToString()),
+                                        tags: ImmutableArray.Create(WellKnownTags.Constant, "Xamarin"),
+                                        rules: StandardCompletionRules));
                                 }
                             }
-                        }
-                        finally
-                        {
-                            reader?.Dispose();
                         }
                     }
                 }

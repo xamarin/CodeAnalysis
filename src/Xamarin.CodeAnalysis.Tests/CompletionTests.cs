@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -13,17 +13,26 @@ namespace Xamarin.CodeAnalysis.Tests
     {
         [Theory]
         [InlineData(@"using Android.App;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
-using Android.Views;
 
-[Activity(Label = ""`"", MainLauncher = true)]
-public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
+namespace MyApp
 {
-    public bool OnNavigationItemSelected(IMenuItem menuItem) => true;
+    [Activity(Label = ""`"", MainLauncher = true)]
+    public class MainActivity : Activity
+    {
+    }
 }
-", "@string/app_name")]
-        public async Task can_retrieve_completion(string code, string completion)
+", "@string/app_name", "@string/app_title")]
+        [InlineData(@"using Android.App;
+
+namespace MyApp
+{
+    [Activity(Theme = ""`"", MainLauncher = true)]
+    public class MainActivity : Activity
+    {
+    }
+}
+", "@style/AppTheme", "@style/OtherTheme")]
+        public async Task can_retrieve_completion(string code, params string[] completions)
         {
             var hostServices = MefHostServices.Create(MefHostServices.DefaultAssemblies.Concat(
                 new[]
@@ -36,23 +45,27 @@ public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemS
             var document = workspace
                .AddProject("TestProject", LanguageNames.CSharp)
                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-               .WithMetadataReferences(new MetadataReference[]
-               {
-#pragma warning disable CS0436 // Type conflicts with imported type
-                   MetadataReference.CreateFromFile(ThisAssembly.Metadata.NETStandardReference),
-#pragma warning restore CS0436 // Type conflicts with imported type
-                   MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.dll"),
-                   MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.Completion.dll"),
-               })
-               .AddAdditionalDocument("strings.xml", @"<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name='app_name'>TestApp</string>
-</resources>", new[] { "Resources\\values" }, "Resources\\values\\strings.xml")
-               .Project
-               .AddAdditionalDocument("styles.xml", @"<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <style name='AppTheme' parent='Theme.AppCompat.Light.DarkActionBar' />
-</resources>", new[] { "Resources\\values" }, "Resources\\values\\styles.xml")
+               .WithMetadataReferences(Directory
+                    .EnumerateFiles("MonoAndroid", "*.dll")
+                    .Select(dll => MetadataReference.CreateFromFile(dll)))
+               .AddDocument("Resource.designer.cs", @"[assembly: global::Android.Runtime.ResourceDesignerAttribute(""MyApp.Resource"", IsApplication=true)]
+namespace MyApp
+{
+    [System.CodeDom.Compiler.GeneratedCodeAttribute(""Xamarin.Android.Build.Tasks"", ""1.0.0.0"")]
+    public partial class Resource
+    {
+        public partial class String
+        {
+            public const int app_name = 2130968578;
+            public const int app_title = 2130968579;
+        }
+        public partial class Style
+        {
+            public const int AppTheme = 2131034114;
+            public const int OtherTheme = 2131034115;
+        }
+    }
+}")
                .Project
                .AddDocument("TestDocument.cs", code.Replace("`", ""));
 
@@ -62,78 +75,60 @@ public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemS
             var caret = code.IndexOf('`');
             Assert.NotEqual(-1, caret);
 
-            var completions = await service.GetCompletionsAsync(document, caret);
+            var actual = await service.GetCompletionsAsync(document, caret);
 
-            Assert.NotNull(completions);
-            Assert.Contains(completions.Items, x => x.Tags.Contains("Xamarin"));
-            Assert.Contains(completions.Items, x => x.DisplayText == completion);
+            Assert.NotNull(actual);
+
+            Assert.All(actual.Items, x => x.Tags.Contains("Xamarin"));
+            Assert.Equal(actual.Items.Select(x => x.DisplayText), completions);
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
         [Theory]
         [InlineData(@"using Android.App;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
-using Android.Views;
-
-[Activity(Label = ""@string/app`"", MainLauncher = true)]
-public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
+namespace MyApp
 {
-    public bool OnNavigationItemSelected(IMenuItem menuItem) => true;
-}
-", "@string/app_name", @"using Android.App;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
-using Android.Views;
-
-[Activity(Label = ""@string/app_name"", MainLauncher = true)]
-public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
+    [Activity(Label = ""@string/app`"", MainLauncher = true)]
+    public class MainActivity : Activity
+    {
+    }
+}", "@string/app_name", @"using Android.App;
+namespace MyApp
 {
-    public bool OnNavigationItemSelected(IMenuItem menuItem) => true;
-}
-")]
+    [Activity(Label = ""@string/app_name"", MainLauncher = true)]
+    public class MainActivity : Activity
+    {
+    }
+}")]
         [InlineData(@"using Android.App;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
-using Android.Views;
-
-[Activity(Label = ""Hello` World"", MainLauncher = true)]
-public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
+namespace MyApp
 {
-    public bool OnNavigationItemSelected(IMenuItem menuItem) => true;
-}
-", "@string/app_name", @"using Android.App;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
-using Android.Views;
-
-[Activity(Label = ""@string/app_name"", MainLauncher = true)]
-public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
+    [Activity(Label = ""Hello` World"", MainLauncher = true)]
+    public class MainActivity : Activity
+    {
+    }
+}", "@string/app_name", @"using Android.App;
+namespace MyApp
 {
-    public bool OnNavigationItemSelected(IMenuItem menuItem) => true;
-}
-")]
+    [Activity(Label = ""@string/app_name"", MainLauncher = true)]
+    public class MainActivity : Activity
+    {
+    }
+}")]
         [InlineData(@"using Android.App;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
-using Android.Views;
-
-[Activity(Label = ""@string/app_settings`"", MainLauncher = true)]
-public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
+namespace MyApp
 {
-    public bool OnNavigationItemSelected(IMenuItem menuItem) => true;
-}
-", "@string/app_name", @"using Android.App;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
-using Android.Views;
-
-[Activity(Label = ""@string/app_name"", MainLauncher = true)]
-public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
+    [Activity(Label = ""@string/app_settings`"", MainLauncher = true)]
+    public class MainActivity : Activity
+    {
+    }
+}", "@string/app_name", @"using Android.App;
+namespace MyApp
 {
-    public bool OnNavigationItemSelected(IMenuItem menuItem) => true;
-}
-")]
+    [Activity(Label = ""@string/app_name"", MainLauncher = true)]
+    public class MainActivity : Activity
+    {
+    }
+}")]
         public async Task can_apply_change(string code, string completion, string expected)
         {
             var hostServices = MefHostServices.Create(MefHostServices.DefaultAssemblies.Concat(
@@ -147,23 +142,26 @@ public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemS
             var document = workspace
                .AddProject("TestProject", LanguageNames.CSharp)
                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-               .WithMetadataReferences(new MetadataReference[]
-               {
-#pragma warning disable CS0436 // Type conflicts with imported type
-                   MetadataReference.CreateFromFile(ThisAssembly.Metadata.NETStandardReference),
-#pragma warning restore CS0436 // Type conflicts with imported type
-                   MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.dll"),
-                   MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.Completion.dll"),
-               })
-               .AddAdditionalDocument("strings.xml", @"<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name='app_name'>TestApp</string>
-</resources>", new[] { "Resources\\values" }, "Resources\\values\\strings.xml")
-               .Project
-               .AddAdditionalDocument("styles.xml", @"<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <style name='AppTheme' parent='Theme.AppCompat.Light.DarkActionBar' />
-</resources>", new[] { "Resources\\values" }, "Resources\\values\\styles.xml")
+               .WithMetadataReferences(Directory
+                    .EnumerateFiles("MonoAndroid", "*.dll")
+                    .Select(dll => MetadataReference.CreateFromFile(dll)))
+               .AddDocument("Resource.designer.cs", @"[assembly: global::Android.Runtime.ResourceDesignerAttribute(""MyApp.Resource"", IsApplication=true)]
+namespace MyApp
+{
+    [System.CodeDom.Compiler.GeneratedCodeAttribute(""Xamarin.Android.Build.Tasks"", ""1.0.0.0"")]
+    public partial class Resource
+    {
+        public partial class String
+        {
+            public const int app_name = 2130968578;
+            public const int app_title = 2130968579;
+        }
+        public partial class Style
+        {
+            public const int AppTheme = 2131034114;
+        }
+    }
+}")
                .Project
                .AddDocument("TestDocument.cs", code.Replace("`", ""));
 
@@ -185,7 +183,6 @@ public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemS
 
             Assert.Equal(expected, changed);
         }
-
 
         [Theory]
         [InlineData(@"using System;
@@ -222,14 +219,27 @@ public class Foo
             var document = workspace
                .AddProject("TestProject", LanguageNames.CSharp)
                .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-               .WithMetadataReferences(new MetadataReference[]
-               {
-#pragma warning disable CS0436 // Type conflicts with imported type
-                   MetadataReference.CreateFromFile(ThisAssembly.Metadata.NETStandardReference),
-#pragma warning restore CS0436 // Type conflicts with imported type
-                   MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.dll"),
-                   MetadataReference.CreateFromFile("Xamarin.CodeAnalysis.Completion.dll"),
-               })
+               .WithMetadataReferences(Directory
+                    .EnumerateFiles("MonoAndroid", "*.dll")
+                    .Select(dll => MetadataReference.CreateFromFile(dll)))
+               .AddDocument("Resource.designer.cs", @"[assembly: global::Android.Runtime.ResourceDesignerAttribute(""MyApp.Resource"", IsApplication=true)]
+namespace MyApp
+{
+    [System.CodeDom.Compiler.GeneratedCodeAttribute(""Xamarin.Android.Build.Tasks"", ""1.0.0.0"")]
+    public partial class Resource
+    {
+        public partial class String
+        {
+            public const int app_name = 2130968578;
+            public const int app_title = 2130968579;
+        }
+        public partial class Style
+        {
+            public const int AppTheme = 2131034114;
+        }
+    }
+}")
+               .Project
                .AddDocument("TestDocument.cs", code.Replace("`", ""));
 
             var service = CompletionService.GetService(document);

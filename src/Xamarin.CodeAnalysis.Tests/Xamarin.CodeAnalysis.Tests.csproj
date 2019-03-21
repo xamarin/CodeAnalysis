@@ -23,4 +23,21 @@
     </AssemblyAttribute>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="MonoAndroid\*.*" CopyToOutputDirectory="PreserveNewest" IsAssembly="true" />
+  </ItemGroup>
+
+  <Target Name="BeforeResolveAssemblyReferences" BeforeTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <NoneAssemblies Include="@(None -> WithMetadataValue('IsAssembly', 'true'))" />
+      <None Remove="@(NoneAssemblies)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="AfterResolveAssemblyReferences" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <None Include="@(NoneAssemblies)" />
+    </ItemGroup>
+  </Target>
+
 </Project>
