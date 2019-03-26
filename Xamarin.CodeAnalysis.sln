@@ -7,25 +7,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.CodeAnalysis", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.CodeAnalysis.Tests", "src\Xamarin.CodeAnalysis.Tests\Xamarin.CodeAnalysis.Tests.csproj", "{366C371C-0FCE-4357-87AE-C03F5DB8D47E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{ADBB9E34-F6F8-4E54-82AA-279EE5DDFD15}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ADBB9E34-F6F8-4E54-82AA-279EE5DDFD15}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
 		src\Directory.Build.props = src\Directory.Build.props
 		src\Directory.Build.targets = src\Directory.Build.targets
-		src\GenerateInternalsVisibleTo.targets = src\GenerateInternalsVisibleTo.targets
 		src\GitInfo.txt = src\GitInfo.txt
 		src\global.json = src\global.json
-		src\NuGet.Config = src\NuGet.Config
+		nuget.config = nuget.config
 		src\Packages.props = src\Packages.props
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{43589FA6-E3DD-4308-89BF-889C333CB946}"
-	ProjectSection(SolutionItems) = preProject
-		docs\XAA1001.md = docs\XAA1001.md
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.CodeAnalysis.Remote", "src\Xamarin.CodeAnalysis.Remote\Xamarin.CodeAnalysis.Remote.csproj", "{BFD12615-4DF8-4141-9A03-1B082457F699}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.CodeAnalysis.Windows", "src\Xamarin.CodeAnalysis.Windows\Xamarin.CodeAnalysis.Windows.csproj", "{62D06ACA-6FA4-4553-A963-CB9AF153F66B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.CodeAnalysis.Windows", "src\Xamarin.CodeAnalysis.Windows\Xamarin.CodeAnalysis.Windows.csproj", "{5409EFB9-CF35-47C4-AC27-74A1122132AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,14 +47,22 @@ Global
 		{366C371C-0FCE-4357-87AE-C03F5DB8D47E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{366C371C-0FCE-4357-87AE-C03F5DB8D47E}.Release|x86.ActiveCfg = Release|Any CPU
 		{366C371C-0FCE-4357-87AE-C03F5DB8D47E}.Release|x86.Build.0 = Release|Any CPU
-		{62D06ACA-6FA4-4553-A963-CB9AF153F66B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{62D06ACA-6FA4-4553-A963-CB9AF153F66B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{62D06ACA-6FA4-4553-A963-CB9AF153F66B}.Debug|x86.ActiveCfg = Debug|x86
-		{62D06ACA-6FA4-4553-A963-CB9AF153F66B}.Debug|x86.Build.0 = Debug|x86
-		{62D06ACA-6FA4-4553-A963-CB9AF153F66B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{62D06ACA-6FA4-4553-A963-CB9AF153F66B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{62D06ACA-6FA4-4553-A963-CB9AF153F66B}.Release|x86.ActiveCfg = Release|x86
-		{62D06ACA-6FA4-4553-A963-CB9AF153F66B}.Release|x86.Build.0 = Release|x86
+		{BFD12615-4DF8-4141-9A03-1B082457F699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFD12615-4DF8-4141-9A03-1B082457F699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFD12615-4DF8-4141-9A03-1B082457F699}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BFD12615-4DF8-4141-9A03-1B082457F699}.Debug|x86.Build.0 = Debug|Any CPU
+		{BFD12615-4DF8-4141-9A03-1B082457F699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFD12615-4DF8-4141-9A03-1B082457F699}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFD12615-4DF8-4141-9A03-1B082457F699}.Release|x86.ActiveCfg = Release|Any CPU
+		{BFD12615-4DF8-4141-9A03-1B082457F699}.Release|x86.Build.0 = Release|Any CPU
+		{5409EFB9-CF35-47C4-AC27-74A1122132AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5409EFB9-CF35-47C4-AC27-74A1122132AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5409EFB9-CF35-47C4-AC27-74A1122132AF}.Debug|x86.ActiveCfg = Debug|x86
+		{5409EFB9-CF35-47C4-AC27-74A1122132AF}.Debug|x86.Build.0 = Debug|x86
+		{5409EFB9-CF35-47C4-AC27-74A1122132AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5409EFB9-CF35-47C4-AC27-74A1122132AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5409EFB9-CF35-47C4-AC27-74A1122132AF}.Release|x86.ActiveCfg = Release|x86
+		{5409EFB9-CF35-47C4-AC27-74A1122132AF}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
