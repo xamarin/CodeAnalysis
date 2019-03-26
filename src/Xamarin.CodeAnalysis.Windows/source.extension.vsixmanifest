@@ -15,6 +15,5 @@
     <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
     <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="Xamarin.CodeAnalysis" Path="|Xamarin.CodeAnalysis|" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="Xamarin.CodeAnalysis" Path="|Xamarin.CodeAnalysis|" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="Xamarin.CodeAnalysis.Completion" Path="|Xamarin.CodeAnalysis.Completion|" />
   </Assets>
 </PackageManifest>

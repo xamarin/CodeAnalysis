@@ -9,7 +9,6 @@
 
     <RootNamespace>Xamarin.CodeAnalysis</RootNamespace>
 
-    <!--<GeneratePkgDefFile>false</GeneratePkgDefFile>-->
     <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
     <IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
     <DefaultIncludeOutputGroupsInVSIX>BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;GetCopyToOutputDirectoryItems;SatelliteDllsProjectOutputGroup</DefaultIncludeOutputGroupsInVSIX>
@@ -42,9 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xamarin.CodeAnalysis.Completion\Xamarin.CodeAnalysis.Completion.csproj">
-      <Name>Xamarin.CodeAnalysis.Completion</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj">
       <Name>Xamarin.CodeAnalysis</Name>
     </ProjectReference>

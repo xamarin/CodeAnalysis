@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.Shell;
 [assembly: ComVisible(false)]
 [assembly: Guid("271716A6-CCF6-47F0-A358-70869B8B24BD")]
 [assembly: ProvideCodeBase(AssemblyName = "Xamarin.CodeAnalysis")]
-[assembly: ProvideCodeBase(AssemblyName = "Xamarin.CodeAnalysis.Completion")]
 [assembly: ProvideCodeBase(AssemblyName = "Xamarin.CodeAnalysis.Windows")]
 
 namespace Xamarin.CodeAnalysis

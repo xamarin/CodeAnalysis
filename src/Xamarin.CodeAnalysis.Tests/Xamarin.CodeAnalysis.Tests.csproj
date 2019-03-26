@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xamarin.CodeAnalysis.Completion\Xamarin.CodeAnalysis.Completion.csproj" />
     <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj" />
   </ItemGroup>
 
@@ -30,8 +29,8 @@
   <Target Name="AfterResolveAssemblyReferences" AfterTargets="ResolveAssemblyReferences">
     <ItemGroup>
       <None Include="$(MonoAndroidRoot)\v8.1\Mono.Android.dll" CopyToOutputDirectory="PreserveNewest" Link="MonoAndroid\Mono.Android.dll" />
-      <None Include="$(MonoAndroidRoot)\v1.0\mscorlib.dll"  CopyToOutputDirectory="PreserveNewest" Link="MonoAndroid\mscorlib.dll" />
-      <None Include="$(MonoAndroidRoot)\v1.0\System.dll"  CopyToOutputDirectory="PreserveNewest" Link="MonoAndroid\System.dll" />
+      <None Include="$(MonoAndroidRoot)\v1.0\mscorlib.dll" CopyToOutputDirectory="PreserveNewest" Link="MonoAndroid\mscorlib.dll" />
+      <None Include="$(MonoAndroidRoot)\v1.0\System.dll" CopyToOutputDirectory="PreserveNewest" Link="MonoAndroid\System.dll" />
     </ItemGroup>
   </Target>
 
