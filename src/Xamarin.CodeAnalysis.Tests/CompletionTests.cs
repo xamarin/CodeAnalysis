@@ -9,17 +9,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Xunit;
 
-namespace Android.App
-{
-    [AttributeUsage(AttributeTargets.Class)]
-    public class MyActivityAttribute : Attribute
-    {
-        public string Label { get; set; }
-        [Category("@drawable;@mipmap")]
-        public string Drawable { get; set; }
-    }
-}
-
 namespace Xamarin.CodeAnalysis.Tests
 {
     public class CompletionTests
