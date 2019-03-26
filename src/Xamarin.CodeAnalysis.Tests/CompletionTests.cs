@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -6,6 +8,17 @@ using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Xunit;
+
+namespace Android.App
+{
+    [AttributeUsage(AttributeTargets.Class)]
+    public class MyActivityAttribute : Attribute
+    {
+        public string Label { get; set; }
+        [Category("@drawable;@mipmap")]
+        public string Drawable { get; set; }
+    }
+}
 
 namespace Xamarin.CodeAnalysis.Tests
 {
@@ -32,6 +45,72 @@ namespace MyApp
     }
 }
 ", "@style/AppTheme", "@style/OtherTheme")]
+        [InlineData(@"using System;
+using System.ComponentModel;
+using Android.App;
+
+namespace Android.App;
+{
+    [AttributeUsage(AttributeTargets.Class)]
+    public class MyActivityAttribute : Attribute
+    {
+        public MyActivityAttribute(string id) { }
+    }
+}
+
+namespace MyApp
+{
+    [MyActivity(""`"")]
+    public class MainActivity : Activity
+    {
+    }
+}")]
+        [InlineData(@"using System;
+using System.ComponentModel;
+using Android.App;
+
+namespace Android.App;
+{
+    [AttributeUsage(AttributeTargets.Class)]
+    public class MyActivityAttribute : Attribute
+    {
+        public string Label { get; set; }
+        [Category(""@drawable;@mipmap"")]
+        public string Drawable { get; set; }
+    }
+}
+
+namespace MyApp
+{
+    [MyActivity(Label = ""`"")]
+    public class MainActivity : Activity
+    {
+    }
+}
+", "@string/app_name", "@string/app_title")]
+        [InlineData(@"using System;
+using System.ComponentModel;
+using Android.App;
+
+namespace Android.App;
+{
+    [AttributeUsage(AttributeTargets.Class)]
+    public class MyActivityAttribute : Attribute
+    {
+        public string Label { get; set; }
+        [Category(""@drawable;@mipmap"")]
+        public string Drawable { get; set; }
+    }
+}
+
+namespace MyApp
+{
+    [MyActivity(Drawable = ""`"")]
+    public class MainActivity : Activity
+    {
+    }
+}
+", "@drawable/design_fab_background", "@mipmap/ic_launcher")]
         public async Task can_retrieve_completion(string code, params string[] completions)
         {
             var hostServices = MefHostServices.Create(MefHostServices.DefaultAssemblies.Concat(
@@ -64,6 +143,14 @@ namespace MyApp
             public const int AppTheme = 2131034114;
             public const int OtherTheme = 2131034115;
         }
+        public partial class Drawable
+        {
+            public const int design_fab_background = 2131296343;
+        }
+        public partial class Mipmap
+        {
+            public const int ic_launcher = 2130837506;
+        }
     }
 }")
                .Project
@@ -77,10 +164,13 @@ namespace MyApp
 
             var actual = await service.GetCompletionsAsync(document, caret);
 
-            Assert.NotNull(actual);
+            Assert.False(actual == null && completions != null && completions.Length > 0, "No completions were found.");
 
-            Assert.All(actual.Items, x => x.Tags.Contains("Xamarin"));
-            Assert.Equal(actual.Items.Select(x => x.DisplayText), completions);
+            if (actual != null)
+            {
+                Assert.All(actual.Items, x => x.Tags.Contains("Xamarin"));
+                Assert.Equal(actual.Items.Select(x => x.DisplayText), completions);
+            }
         }
 
         [Theory]
