@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Tags;
 using Microsoft.CodeAnalysis.Text;
 
@@ -18,7 +19,24 @@ namespace Xamarin.CodeAnalysis
     [ExportCompletionProvider(nameof(ResourceCompletionProvider), LanguageNames.CSharp)]
     public class ResourceCompletionProvider : CompletionProvider
     {
-        private static readonly CompletionItemRules StandardCompletionRules = CompletionItemRules.Default.WithSelectionBehavior(CompletionItemSelectionBehavior.SoftSelection);
+        private static readonly CompletionItemRules StandardCompletionRules = CompletionItemRules.Default;
+            //.WithSelectionBehavior(CompletionItemSelectionBehavior.SoftSelection);
+
+        public override bool ShouldTriggerCompletion(SourceText text, int caretPosition, CompletionTrigger trigger, OptionSet options)
+        {
+            if (trigger.Kind == CompletionTriggerKind.Invoke ||
+                trigger.Kind == CompletionTriggerKind.InvokeAndCommitIfUnique)
+            {
+                return true;
+            }
+
+            if (trigger.Kind == CompletionTriggerKind.Insertion)
+            {
+                return trigger.Character == '"';
+            }
+
+            return base.ShouldTriggerCompletion(text, caretPosition, trigger, options);
+        }
 
         public override Task<CompletionDescription> GetDescriptionAsync(Document document, CompletionItem item, CancellationToken cancellationToken)
         {
@@ -117,18 +135,19 @@ namespace Xamarin.CodeAnalysis
                                 {
                                     foreach (var member in resourceSymbol.GetMembers().Where(x => x.Kind == SymbolKind.Field))
                                     {
-                                        completionContext.AddItem(CompletionItem.Create(
-                                            $"@{category}/{member.Name}",
-                                            literal.GetText().ToString(),
-                                            $"@{category}/{member.Name}",
-                                            properties: ImmutableDictionary.Create<string, string>()
-                                                .Add("Summary", member.GetDocumentationCommentXml())
-                                                // Add the starting quote char to start position
-                                                .Add("Start", (node.Span.Start + 1).ToString())
-                                                // Remove the two quote characters
-                                                .Add("Length", (node.Span.Length - 2).ToString()),
-                                            tags: ImmutableArray.Create(WellKnownTags.Constant, "Xamarin"),
-                                            rules: StandardCompletionRules));
+                                    completionContext.AddItem(CompletionItem.Create(
+                                        displayText: $"@{category}/{member.Name}",
+                                        //filterText: member.Name,
+                                        //literal.GetText().ToString(),
+                                        sortText: $"@{category}/{member.Name}",
+                                        properties: ImmutableDictionary.Create<string, string>()
+                                            .Add("Summary", member.GetDocumentationCommentXml())
+                                            // Add the starting quote char to start position
+                                            .Add("Start", (node.Span.Start + 1).ToString())
+                                            // Remove the two quote characters
+                                            .Add("Length", (node.Span.Length - 2).ToString()),
+                                        tags: ImmutableArray.Create(WellKnownTags.Constant, "Xamarin"),
+                                        rules: CompletionItemRules.Default));
                                     }
                                 }
                             }

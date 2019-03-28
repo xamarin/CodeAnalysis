@@ -88,7 +88,7 @@ namespace Xamarin.CodeAnalysis
             var literal = (LiteralExpressionSyntax)token.Parent;
             var argument = literal.FirstAncestorOrSelf<AttributeArgumentSyntax>();
 
-            TextDocument resourceDoc = default;
+            var resourceDoc = default(TextDocument);
             if (argument.NameEquals.Name.ToString() == "Label")
                 resourceDoc = context.Document.Project.AdditionalDocuments.FirstOrDefault(doc => doc.FilePath.EndsWith(@"Resources\values\strings.xml"));
 
