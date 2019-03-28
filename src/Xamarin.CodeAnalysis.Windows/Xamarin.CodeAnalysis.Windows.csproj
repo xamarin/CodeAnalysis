@@ -92,6 +92,7 @@
 
   <Target Name="IsExperimental" Returns="$(IsExperimental)" />
   <Target Name="IsSystemComponent" Returns="$(IsSystemComponent)" />
+  <Target Name="IsCI" Returns="$(CI)" />
 
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <BuildDependsOn Condition="!$(CI)">
