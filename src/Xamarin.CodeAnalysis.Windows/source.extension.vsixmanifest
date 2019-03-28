@@ -4,6 +4,7 @@
     <Identity Id="Xamarin.CodeAnalyis" Version="|%CurrentProject%;GetVsixVersion|" Language="en-US" Publisher="Xamarin" />
     <DisplayName>Xamarin Code Analysis</DisplayName>
     <Description>Provides analyzers, code fixes and additional completion for Xamarin projects.</Description>
+    <Icon>Resources\Preview.png</Icon>
   </Metadata>
   <Installation AllUsers="|%CurrentProject%;IsSystemComponent|" SystemComponent="|%CurrentProject%;IsSystemComponent|" Experimental="|%CurrentProject%;IsExperimental|">
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />

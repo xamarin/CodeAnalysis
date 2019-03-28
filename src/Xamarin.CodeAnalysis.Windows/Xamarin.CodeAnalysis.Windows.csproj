@@ -59,6 +59,8 @@
     <Content Include="*.targets" IncludeInVSIX="true" VSIXSubPath="Xamarin" SymLink="true" />
     <Content Update="Xamarin.CodeAnalysis.ImportAfter.targets" VSIXSubPath="Current\Microsoft.Common.Targets\ImportAfter" />
     <Content Update="@(Content)" Condition="$(CI)" InstallRoot="MSBuild" />
+    <None Remove="Resources\*.*" />
+    <Content Include="Resources\*.*" IncludeInVSIX="true" CopyToOutputDirectory="PreserveNewest" />
     <UpToDateCheckInput Include="@(Content)" />
   </ItemGroup>
 
