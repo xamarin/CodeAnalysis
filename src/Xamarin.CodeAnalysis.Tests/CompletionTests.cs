@@ -158,7 +158,7 @@ namespace MyApp
             if (actual != null)
             {
                 Assert.All(actual.Items, x => x.Tags.Contains("Xamarin"));
-                Assert.Equal(actual.Items.Select(x => x.DisplayText), completions);
+                Assert.Equal(actual.Items.Select(x => x.SortText), completions);
             }
         }
 
@@ -252,9 +252,9 @@ namespace MyApp
 
             var completions = await service.GetCompletionsAsync(document, caret);
             Assert.NotNull(completions);
-            Assert.Contains(completions.Items, x => x.DisplayText == completion);
+            Assert.Contains(completions.Items, x => x.SortText == completion);
 
-            var item = completions.Items.First(x => x.DisplayText == completion);
+            var item = completions.Items.First(x => x.SortText == completion);
             var change = await service.GetChangeAsync(document, item);
             var text = await document.GetTextAsync();
 

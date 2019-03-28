@@ -33,16 +33,19 @@ namespace Xamarin.CodeAnalysis
             if (trigger.Kind == CompletionTriggerKind.Insertion)
             {
                 return trigger.Character == '"';
+            } 
+            else if (trigger.Kind == CompletionTriggerKind.Deletion && 
+                caretPosition > 0 &&
+                text.GetSubText(TextSpan.FromBounds(caretPosition - 1, caretPosition)).ToString() == "\"")
+            {
+                return true;
             }
 
             return base.ShouldTriggerCompletion(text, caretPosition, trigger, options);
         }
 
         public override Task<CompletionDescription> GetDescriptionAsync(Document document, CompletionItem item, CancellationToken cancellationToken)
-        {
-            // TODO: get the actual xml file location.
-            return Task.FromResult(CompletionDescription.FromText(item.Properties["Summary"]));
-        }
+            => Task.FromResult(CompletionDescription.FromText(item.Properties["Summary"]));
 
         public override Task<CompletionChange> GetChangeAsync(Document document, CompletionItem item, char? commitKey, CancellationToken cancellationToken)
         {
@@ -51,7 +54,7 @@ namespace Xamarin.CodeAnalysis
                 item.Properties.TryGetValue("Length", out var length) && 
                 int.TryParse(length, out var l))
             {
-                return Task.FromResult(CompletionChange.Create(new TextChange(new TextSpan(s, l), item.DisplayText)));
+                return Task.FromResult(CompletionChange.Create(new TextChange(new TextSpan(s, l), item.SortText)));
             }
 
             return base.GetChangeAsync(document, item, commitKey, cancellationToken);
@@ -136,12 +139,11 @@ namespace Xamarin.CodeAnalysis
                                     foreach (var member in resourceSymbol.GetMembers().Where(x => x.Kind == SymbolKind.Field))
                                     {
                                     completionContext.AddItem(CompletionItem.Create(
-                                        displayText: $"@{category}/{member.Name}",
-                                        //filterText: member.Name,
-                                        //literal.GetText().ToString(),
+                                        displayText: member.Name,
+                                        displayTextPrefix: $"@{category}/",
                                         sortText: $"@{category}/{member.Name}",
                                         properties: ImmutableDictionary.Create<string, string>()
-                                            .Add("Summary", member.GetDocumentationCommentXml())
+                                             .Add("Summary", member.GetDocumentationCommentXml())
                                             // Add the starting quote char to start position
                                             .Add("Start", (node.Span.Start + 1).ToString())
                                             // Remove the two quote characters
