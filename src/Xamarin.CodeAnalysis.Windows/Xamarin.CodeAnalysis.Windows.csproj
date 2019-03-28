@@ -22,16 +22,21 @@
     <VsixVersion>42.42.42</VsixVersion>
     <DefaultItemExcludes>*.targets</DefaultItemExcludes>
   </PropertyGroup>
-  
-  
+
   <PropertyGroup Condition="$(CI)">
+    <ExtensionInstallationRoot>Extensions</ExtensionInstallationRoot>
+    <ExtensionInstallationFolder>Xamarin\CodeAnalyis</ExtensionInstallationFolder>
+    <DeployExtension>false</DeployExtension>
+    <CreateVsixContainer>true</CreateVsixContainer>
+  </PropertyGroup>
+
+  <!-- We can set this as a variable in VSTS when/if this VSIX is inserted. 
+       At that point, we'll need the VSIX to be signed in order to overwrite 
+       the built-in one. -->
+  <PropertyGroup Condition="'$(ProductComponent)' == 'true'">
     <IsProductComponent>true</IsProductComponent>
     <IsExperimental>false</IsExperimental>
     <IsSystemComponent>true</IsSystemComponent>
-    <ExtensionInstallationRoot>Extensions</ExtensionInstallationRoot>
-    <ExtensionInstallationFolder>Xamarin\Forms.Previewer</ExtensionInstallationFolder>
-    <DeployExtension>false</DeployExtension>
-    <CreateVsixContainer>true</CreateVsixContainer>
   </PropertyGroup>
 
   <ItemGroup>
