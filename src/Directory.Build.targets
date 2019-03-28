@@ -9,26 +9,20 @@
     <PropertyGroup>
       <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' != ''">$(SYSTEM_PULLREQUEST_TARGETBRANCH)</GitBranch>
       <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' == '' and '$(BUILD_SOURCEBRANCHNAME)' != ''">$(BUILD_SOURCEBRANCHNAME)</GitBranch>
+      <GitSemVerDashLabel Condition="'$(SYSTEM_PULLREQUEST_PULLREQUESTNUMBER)' != ''">-pr$(SYSTEM_PULLREQUEST_PULLREQUESTNUMBER)</GitSemVerDashLabel>
     </PropertyGroup>
 
     <ItemGroup>
-      <VersionMetadata Include="$(GitCommits)"/>
-
-      <VersionMetadata Condition="$(CI) and '$(BUILD_REASON)' == 'PullRequest'"
-                       Include="pr.$(SYSTEM_PULLREQUEST_PULLREQUESTNUMBER)"/>
-
       <VersionMetadata Include="sha.$(GitCommit)"/>
-
       <VersionMetadata Condition="$(CI)" 
                        Include="vsts.$(BUILD_BUILDID)"/>
-
       <VersionMetadata Include="$(GitBranch)"/>
     </ItemGroup>
 
     <PropertyGroup>
       <VersionMetadataLabel>@(VersionMetadata -> '%(Identity)', '-')</VersionMetadataLabel>
       <VersionMetadataPlusLabel Condition="'$(VersionMetadataLabel)' != ''">+$(VersionMetadataLabel)</VersionMetadataPlusLabel>
-      <PackageVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(GitSemVerDashLabel)</PackageVersion>
+      <PackageVersion>$(GitSemverMajor).$(GitSemVerMinor).$(GitSemVerPatch)$(GitSemVerDashLabel)</PackageVersion>
       <Version>$(PackageVersion)$(VersionMetadataPlusLabel)</Version>
     </PropertyGroup>
 
