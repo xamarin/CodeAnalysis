@@ -13,7 +13,9 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Language.Xml;
+using Xamarin.CodeAnalysis.Properties;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static Xamarin.CodeAnalysis.LocalizableString;
 
 namespace Xamarin.CodeAnalysis
 {
@@ -25,13 +27,17 @@ namespace Xamarin.CodeAnalysis
         /// </summary>
         public const string DiagnosticId = "XAA1001";
 
-        const string Title = "Move string to resource";
-        const string MessageFormat = "Literal strings should be placed in a resource file.";
-        const string Description = "By placing literal strings in a resource file, it can be easily localized.";
         const string HelpLink = "https://github.com/xamarin/CodeAnalysis/blob/master/docs/XAA1001.md";
 
         static readonly DiagnosticDescriptor Descriptor =
-            new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Constants.AnalyzerCategory, Microsoft.CodeAnalysis.DiagnosticSeverity.Info, true, Description, HelpLink);
+            new DiagnosticDescriptor(DiagnosticId, 
+                Localizable(nameof(Resources.XAA1001_Title)),
+                Localizable(nameof(Resources.XAA1001_MessageFormat)), 
+                Constants.AnalyzerCategory, 
+                Microsoft.CodeAnalysis.DiagnosticSeverity.Info, 
+                true, 
+                Localizable(nameof(Resources.XAA1001_Description)), 
+                HelpLink);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptor);
 
@@ -57,8 +63,6 @@ namespace Xamarin.CodeAnalysis
     [Shared]
     internal class XAA1001CodeFixProvider : CodeFixProvider
     {
-        const string Title = "Move string to resource";
-
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(XAA1001StringLiteralToResource.DiagnosticId);
 
@@ -70,7 +74,7 @@ namespace Xamarin.CodeAnalysis
             {
                 context.RegisterCodeFix(
                     CodeAction.Create(
-                        Title,
+                        Resources.XAA1001_Title,
                         cancellation => CreateChangedSolutionAsync(context, diagnostic, cancellation),
                         nameof(XAA1001CodeFixProvider)),
                     diagnostic);
