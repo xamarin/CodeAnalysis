@@ -52,7 +52,7 @@ namespace Xamarin.CodeAnalysis
             if (context.Node is LiteralExpressionSyntax literal &&
                 context.Node.Parent is AttributeArgumentSyntax &&
                 context.Node.Parent?.Parent?.Parent is AttributeSyntax &&
-                !literal.GetText().ToString().StartsWith("@"))
+                !literal.GetText().ToString().Trim('"').StartsWith("@"))
             {
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
             }
