@@ -51,7 +51,7 @@ namespace Xamarin.CodeAnalysis
                 slash != -1)
             {
                 var category = value.Substring(1, slash - 1);
-                var identifier = value.Substring(slash + 1);
+                var identifier = value.Substring(slash + 1).Replace('.', '_');
 
                 var compilation = context.Compilation;
                 var resourceDesignerAttribute = compilation.Assembly.GetAttributes().FirstOrDefault(attr => 

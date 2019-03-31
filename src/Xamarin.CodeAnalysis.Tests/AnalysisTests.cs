@@ -53,6 +53,7 @@ namespace MyApp
         public partial class Style
         {
             public const int AppTheme = 2131034114;
+			public const int AppTheme_NoActionBar = 2131230723;
         }
         public partial class Drawable
         {
