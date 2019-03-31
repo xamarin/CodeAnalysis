@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
@@ -25,8 +22,15 @@ namespace Xamarin.CodeAnalysis.Tests
 public class MainActivity : Activity
 {
 }
-", XAA1001StringLiteralToResource.DiagnosticId)]
-        public async Task can_get_diagnostics(string code, string diagnosticId)
+", typeof(XAA1001StringLiteralToResource))]
+        [InlineData(@"using Android.App;
+
+[Activity(Label = ""@string/foo"")]
+public class MainActivity : Activity
+{
+}
+", typeof(XAA1002ResourceIdentifierNotFound))]
+        public async Task can_get_diagnostics(string code,  Type analyzerType)
         {
             var workspace = new AdhocWorkspace();
             var document = workspace
@@ -35,36 +39,54 @@ public class MainActivity : Activity
                .WithMetadataReferences(Directory
                     .EnumerateFiles("MonoAndroid", "*.dll")
                     .Select(dll => MetadataReference.CreateFromFile(dll)))
-               .AddAdditionalDocument("strings.xml", @"<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name='app_name'>TestApp</string>
-</resources>", new[] { "Resources", "values" }, "Resources\\values\\strings.xml")
-               .Project
-               .AddAdditionalDocument("styles.xml", @"<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <style name='AppTheme' parent='Theme.AppCompat.Light.DarkActionBar' />
-</resources>", new[] { "Resources", "values" }, "Resources\\values\\styles.xml")
+               .AddDocument("Resource.designer.cs", @"[assembly: global::Android.Runtime.ResourceDesignerAttribute(""MyApp.Resource"", IsApplication=true)]
+namespace MyApp
+{
+    [System.CodeDom.Compiler.GeneratedCodeAttribute(""Xamarin.Android.Build.Tasks"", ""1.0.0.0"")]
+    public partial class Resource
+    {
+        public partial class String
+        {
+            public const int app_name = 2130968578;
+            public const int app_title = 2130968579;
+        }
+        public partial class Style
+        {
+            public const int AppTheme = 2131034114;
+        }
+        public partial class Drawable
+        {
+            public const int design_fab_background = 2131296343;
+        }
+        public partial class Mipmap
+        {
+            public const int ic_launcher = 2130837506;
+        }
+    }
+}")
                .Project
                .AddDocument("TestDocument.cs", code.Replace("`", ""));
 
             var compilation = await document.Project.GetCompilationAsync(TimeoutToken(5));
-            var withAnalyzers = compilation.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new XAA1001StringLiteralToResource()));
+            var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance(analyzerType);
+            var withAnalyzers = compilation.WithAnalyzers(ImmutableArray.Create(analyzer));
             var diagnostic = (await withAnalyzers.GetAnalyzerDiagnosticsAsync())
-                .Where(d => d.Id == diagnosticId)
+                .Where(d => analyzer.SupportedDiagnostics.Any(x => x.Id == d.Id))
                 .OrderBy(d => d.Location.SourceSpan.Start)
-                .FirstOrDefault() ?? throw new ArgumentException($"Analyzer did not produce diagnostic {diagnosticId}.");
+                .FirstOrDefault() ?? throw new ArgumentException($"Analyzer did not produce diagnostic(s) {string.Join(", ", analyzer.SupportedDiagnostics.Select(d => d.Id))}.");
 
-            var actions = new List<CodeAction>();
-            var context = new CodeFixContext(document, diagnostic, (a, d) => actions.Add(a), TimeoutToken(5));
-            await new XAA1001CodeFixProvider().RegisterCodeFixesAsync(context);
+            // TODO: test code fix?
+            //var actions = new List<CodeAction>();
+            //var context = new CodeFixContext(document, diagnostic, (a, d) => actions.Add(a), TimeoutToken(5));
+            //await new XAA1001CodeFixProvider().RegisterCodeFixesAsync(context);
 
-            var changed = actions
-                .SelectMany(x => x.GetOperationsAsync(TimeoutToken(2)).Result)
-                .OfType<ApplyChangesOperation>()
-                .First()
-                .ChangedSolution;
+            //var changed = actions
+            //    .SelectMany(x => x.GetOperationsAsync(TimeoutToken(2)).Result)
+            //    .OfType<ApplyChangesOperation>()
+            //    .First()
+            //    .ChangedSolution;
 
-            var changes = changed.GetChanges(document.Project.Solution);
+            //var changes = changed.GetChanges(document.Project.Solution);
 
         }
     }

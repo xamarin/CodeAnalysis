@@ -3,6 +3,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <!-- Allow our additional item metadata to propagate to the calling project -->
+    <MSBuildDisableGetCopyToOutputDirectoryItemsOptimization>true</MSBuildDisableGetCopyToOutputDirectoryItemsOptimization>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +26,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="*.targets" Condition="'$(ExcludeTargets)' != 'true'" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Xamarin.CodeAnalysis.ImportAfter.targets" 
+          VSIXSubPathOverride="Current\Microsoft.Common.Targets\ImportAfter" />
   </ItemGroup>
 
 </Project>

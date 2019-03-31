@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		azure-pipelines.yml = azure-pipelines.yml
 		src\Directory.Build.props = src\Directory.Build.props
 		src\Directory.Build.targets = src\Directory.Build.targets
+		src\GenerateInternalsVisibleTo.targets = src\GenerateInternalsVisibleTo.targets
 		src\GitInfo.txt = src\GitInfo.txt
 		src\global.json = src\global.json
 		nuget.config = nuget.config
@@ -22,6 +23,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.CodeAnalysis.Remote", "src\Xamarin.CodeAnalysis.Remote\Xamarin.CodeAnalysis.Remote.csproj", "{BFD12615-4DF8-4141-9A03-1B082457F699}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.CodeAnalysis.Windows", "src\Xamarin.CodeAnalysis.Windows\Xamarin.CodeAnalysis.Windows.csproj", "{5409EFB9-CF35-47C4-AC27-74A1122132AF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{54758F73-0AF2-4AF2-A873-82F7A5EB5450}"
+	ProjectSection(SolutionItems) = preProject
+		docs\XAA1001.md = docs\XAA1001.md
+		docs\XAA1002.md = docs\XAA1002.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

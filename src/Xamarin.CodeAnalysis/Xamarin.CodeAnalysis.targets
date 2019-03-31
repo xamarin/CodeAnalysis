@@ -2,4 +2,8 @@
 
   <Import Project="Xamarin.CodeAnalysis.Android.targets" Condition="'$(TargetFrameworkIdentifier)' == 'MonoAndroid'" />
 
+  <ItemGroup>
+    <Analyzer Include="$(MSBuildThisFileDirectory)Xamarin.CodeAnalysis.dll" />
+  </ItemGroup>
+
 </Project>

@@ -86,5 +86,32 @@ namespace Xamarin.CodeAnalysis.Properties {
                 return ResourceManager.GetString("XAA1001_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No resource found that matches the given name..
+        /// </summary>
+        internal static string XAA1002_Description {
+            get {
+                return ResourceManager.GetString("XAA1002_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No resource found that matches the given name..
+        /// </summary>
+        internal static string XAA1002_MessageFormat {
+            get {
+                return ResourceManager.GetString("XAA1002_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resource id must exist in a resource file.
+        /// </summary>
+        internal static string XAA1002_Title {
+            get {
+                return ResourceManager.GetString("XAA1002_Title", resourceCulture);
+            }
+        }
     }
 }

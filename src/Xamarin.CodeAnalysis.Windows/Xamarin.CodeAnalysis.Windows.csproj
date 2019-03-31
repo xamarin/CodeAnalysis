@@ -48,6 +48,18 @@
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj">
       <Name>Xamarin.CodeAnalysis</Name>
+      <!-- For inclusion in the VSIX install path, we don't want the .targets -->
+      <AdditionalProperties>ExcludeTargets=true</AdditionalProperties>
+    </ProjectReference>
+    <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj">
+      <AdditionalProperties>BuildReference=false</AdditionalProperties>
+      <Name>Xamarin.CodeAnalysis</Name>
+      <BuildProject>false</BuildProject>
+      <!-- For inclusion in the MSBuild folder, pass extra metadata -->
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <VSIXSubPath>Xamarin\CodeAnalysis</VSIXSubPath>
+      <InstallRoot>MSBuild</InstallRoot>
+      <SymLink>true</SymLink>
     </ProjectReference>
   </ItemGroup>
 
@@ -62,7 +74,6 @@
 
   <ItemGroup>
     <Content Include="*.targets" IncludeInVSIX="true" VSIXSubPath="Xamarin" SymLink="true" />
-    <Content Update="Xamarin.CodeAnalysis.ImportAfter.targets" VSIXSubPath="Current\Microsoft.Common.Targets\ImportAfter" />
     <Content Update="@(Content)" Condition="$(CI)" InstallRoot="MSBuild" />
     <None Remove="Resources\*.*" />
     <Content Include="Resources\*.*" IncludeInVSIX="true" CopyToOutputDirectory="PreserveNewest" />
@@ -94,12 +105,25 @@
   <Target Name="IsSystemComponent" Returns="$(IsSystemComponent)" />
   <Target Name="IsCI" Returns="$(CI)" />
 
+  <!--
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <BuildDependsOn Condition="!$(CI)">
       $(BuildDependsOn);
       SymLink
     </BuildDependsOn>
   </PropertyGroup>
+  -->
+
+  <Target Name="ApplyVSIXSubPathOverride" AfterTargets="GetVsixSourceItems">
+    <ItemGroup>
+      <VSIXSourceItem Update="@(VSIXSourceItem)" Condition="'%(VSIXSourceItem.VSIXSubPathOverride)' != ''">
+        <VSIXSubPath>%(VSIXSourceItem.VSIXSubPathOverride)</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Update="@(VSIXSourceItem)" Condition="'%(VSIXSourceItem.VSIXSubPath)' != ''">
+        <TargetPath />
+      </VSIXSourceItem>
+    </ItemGroup>
+  </Target>
 
   <Target Name="SymLink" DependsOnTargets="IsAdministrator;CollectLinkItems;ReplaceLinkItems" />
   

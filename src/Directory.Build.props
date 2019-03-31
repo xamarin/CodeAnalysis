@@ -20,6 +20,9 @@
     <GitSkipCache Condition="$(CI)">true</GitSkipCache>
     <Configuration Condition="'$(Configuration)' == '' and $(CI)">Release</Configuration>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <!-- We don't want to run code analysis for ourselves. -->
+    <ImportXamarinCodeAnalysisTargets>false</ImportXamarinCodeAnalysisTargets>
+    <DefineConstants Condition="$(CI)">CI;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <!-- Redeclared by GitInfo -->
