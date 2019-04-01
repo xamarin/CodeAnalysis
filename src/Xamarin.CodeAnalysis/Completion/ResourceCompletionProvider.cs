@@ -20,7 +20,7 @@ namespace Xamarin.CodeAnalysis
     public class ResourceCompletionProvider : CompletionProvider
     {
         private static readonly CompletionItemRules StandardCompletionRules = CompletionItemRules.Default;
-            //.WithSelectionBehavior(CompletionItemSelectionBehavior.SoftSelection);
+        //.WithSelectionBehavior(CompletionItemSelectionBehavior.SoftSelection);
 
         public override bool ShouldTriggerCompletion(SourceText text, int caretPosition, CompletionTrigger trigger, OptionSet options)
         {
@@ -33,8 +33,8 @@ namespace Xamarin.CodeAnalysis
             if (trigger.Kind == CompletionTriggerKind.Insertion)
             {
                 return trigger.Character == '"';
-            } 
-            else if (trigger.Kind == CompletionTriggerKind.Deletion && 
+            }
+            else if (trigger.Kind == CompletionTriggerKind.Deletion &&
                 caretPosition > 0 &&
                 text.GetSubText(TextSpan.FromBounds(caretPosition - 1, caretPosition)).ToString() == "\"")
             {
@@ -138,18 +138,18 @@ namespace Xamarin.CodeAnalysis
                                 {
                                     foreach (var member in resourceSymbol.GetMembers().Where(x => x.Kind == SymbolKind.Field))
                                     {
-                                    completionContext.AddItem(CompletionItem.Create(
-                                        displayText: member.Name,
-                                        displayTextPrefix: $"@{category}/",
-                                        sortText: $"@{category}/{member.Name}",
-                                        properties: ImmutableDictionary.Create<string, string>()
-                                             .Add("Summary", member.GetDocumentationCommentXml())
-                                            // Add the starting quote char to start position
-                                            .Add("Start", (node.Span.Start + 1).ToString())
-                                            // Remove the two quote characters
-                                            .Add("Length", (node.Span.Length - 2).ToString()),
-                                        tags: ImmutableArray.Create(WellKnownTags.Constant, "Xamarin"),
-                                        rules: CompletionItemRules.Default));
+                                        completionContext.AddItem(CompletionItem.Create(
+                                            displayText: member.Name,
+                                            displayTextPrefix: $"@{category}/",
+                                            sortText: $"@{category}/{member.Name}",
+                                            properties: ImmutableDictionary.Create<string, string>()
+                                                 .Add("Summary", member.GetDocumentationCommentXml())
+                                                // Add the starting quote char to start position
+                                                .Add("Start", (node.Span.Start + 1).ToString())
+                                                // Remove the two quote characters
+                                                .Add("Length", (node.Span.Length - 2).ToString()),
+                                            tags: ImmutableArray.Create(WellKnownTags.Constant, "Xamarin"),
+                                            rules: CompletionItemRules.Default));
                                     }
                                 }
                             }

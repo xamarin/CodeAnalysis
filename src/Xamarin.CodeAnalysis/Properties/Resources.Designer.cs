@@ -61,6 +61,15 @@ namespace Xamarin.CodeAnalysis.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Move string to resource.
+        /// </summary>
+        internal static string XAA1001_ActionTitle {
+            get {
+                return ResourceManager.GetString("XAA1001_ActionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to By placing literal strings in a resource file, it can be easily localized..
         /// </summary>
         internal static string XAA1001_Description {
@@ -70,7 +79,7 @@ namespace Xamarin.CodeAnalysis.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Literal strings should be placed in a resource file..
+        ///   Looks up a localized string similar to Attribute value &apos;{0}&apos; should be placed in a resource file..
         /// </summary>
         internal static string XAA1001_MessageFormat {
             get {
@@ -79,7 +88,7 @@ namespace Xamarin.CodeAnalysis.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Move string to resource.
+        ///   Looks up a localized string similar to Attribute value should be placed in a resource file..
         /// </summary>
         internal static string XAA1001_Title {
             get {
@@ -88,7 +97,7 @@ namespace Xamarin.CodeAnalysis.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No resource found that matches the given name..
+        ///   Looks up a localized string similar to Resource identifier must exist in an Android resource file..
         /// </summary>
         internal static string XAA1002_Description {
             get {
@@ -97,7 +106,7 @@ namespace Xamarin.CodeAnalysis.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No resource found that matches the given name..
+        ///   Looks up a localized string similar to No resource found with identifier &apos;{0}&apos;..
         /// </summary>
         internal static string XAA1002_MessageFormat {
             get {

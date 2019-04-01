@@ -24,7 +24,7 @@ namespace Xamarin.CodeAnalysis
                 Localizable(nameof(Resources.XAA1002_Title)),
                 Localizable(nameof(Resources.XAA1002_MessageFormat)), 
                 Constants.AnalyzerCategory, 
-                Microsoft.CodeAnalysis.DiagnosticSeverity.Error, 
+                DiagnosticSeverity.Error, 
                 true, 
                 Localizable(nameof(Resources.XAA1002_Description)), 
                 HelpLink);
@@ -68,14 +68,12 @@ namespace Xamarin.CodeAnalysis
                             var member = resourceSymbol.GetMembers(identifier).FirstOrDefault();
                             if (member == null)
                             {
-                                // TODO: report?
-                                context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
+                                context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation(), value));
                             }
                         }
                         else
                         {
-                            // TODO: report?
-                            context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
+                            context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation(), value));
                         }
                     }
                 }

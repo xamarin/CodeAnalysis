@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Composition;
 using System.Linq;
 using System.Text;
@@ -50,11 +52,54 @@ namespace Xamarin.CodeAnalysis
         void AnalyzeLiteral(SyntaxNodeAnalysisContext context)
         {
             if (context.Node is LiteralExpressionSyntax literal &&
-                context.Node.Parent is AttributeArgumentSyntax &&
-                context.Node.Parent?.Parent?.Parent is AttributeSyntax &&
-                !literal.GetText().ToString().Trim('"').StartsWith("@"))
+                context.Node.Parent is AttributeArgumentSyntax argument &&
+                context.Node.Parent?.Parent?.Parent is AttributeSyntax attribute &&
+                literal.GetText().ToString().Trim('"') is string value &&
+                !value.StartsWith("@"))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
+                // From the attribute syntax, we'll get the constructor for the attribute
+                var symbol = (context.SemanticModel.GetSymbolInfo(attribute, context.CancellationToken).Symbol as IMethodSymbol)?.ContainingType;
+                if (symbol?.ContainingNamespace.ToDisplayString() == "Android.App")
+                {
+                    var name = argument.NameEquals.Name.ToString();
+                    // First try explicit completion hint via Category
+                    var propertyInfo = symbol.GetMembers(name).FirstOrDefault() as IPropertySymbol;
+                    if (propertyInfo == null)
+                        return;
+
+                    string[] categories;
+                    var categoryAttr = propertyInfo.GetAttributes().FirstOrDefault(attr => attr.AttributeClass.ToDisplayString() == typeof(CategoryAttribute).FullName);
+                    if (categoryAttr == null)
+                    {
+                        // Apply default heuristics based on member name
+                        // Label/Description: @string
+                        // Icon/RoundIcon: @drawable; @mipmap
+                        // Theme: @style
+                        if (name == "Label" || name == "Description")
+                            categories = new[] { "string" };
+                        else if (name == "Icon" || name == "RoundIcon")
+                            categories = new[] { "drawable", "mipmap" };
+                        else if (name == "Theme")
+                            categories = new[] { "style" };
+                        else
+                            return;
+                    }
+                    else if (!categoryAttr.ConstructorArguments.IsDefaultOrEmpty)
+                    {
+                        categories = ((string)categoryAttr.ConstructorArguments[0].Value)
+                            .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(s => s.Trim().TrimStart('@'))
+                            .ToArray();
+                    }
+                    else
+                    {
+                        return;
+                    }
+
+                    // TODO: Potentially support moving resources to other files?
+                    if (categories.Length == 1 && categories[0] == "string")
+                        context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation(), value));
+                }
             }
         }
     }
@@ -83,7 +128,6 @@ namespace Xamarin.CodeAnalysis
             return Task.CompletedTask;
         }
 
-
         private async Task<Solution> CreateChangedSolutionAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellation)
         {
             var root = await context.Document.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
@@ -92,11 +136,10 @@ namespace Xamarin.CodeAnalysis
             var literal = (LiteralExpressionSyntax)token.Parent;
             var argument = literal.FirstAncestorOrSelf<AttributeArgumentSyntax>();
 
-            var resourceDoc = default(TextDocument);
-            if (argument.NameEquals.Name.ToString() == "Label")
-                resourceDoc = context.Document.Project.AdditionalDocuments.FirstOrDefault(doc => doc.FilePath.EndsWith(@"Resources\values\strings.xml"));
+            var resourceDoc = context.Document.Project.AdditionalDocuments
+                .FirstOrDefault(doc => doc.FilePath.EndsWith(@"Resources\values\strings.xml"));
 
-            // Potentially support moving resources to other files?
+            // TODO: Potentially support moving resources to other files?
 
             if (resourceDoc == null)
                 return null;
