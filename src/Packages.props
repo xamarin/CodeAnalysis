@@ -13,7 +13,7 @@
     <PackageReference Update="Microsoft.CodeAnalysis.Remote.ServiceHub" Version="[$(RoslynVersion)]" />
     <PackageReference Update="Microsoft.CodeAnalysis.Remote.Workspaces" Version="[$(RoslynVersion)]" />
     <PackageReference Update="Microsoft.CodeAnalysis.CSharp.Features" Version="[$(RoslynVersion)]" />
-    <PackageReference Update="Microsoft.VSSDK.BuildTools" Version="[15.8.3252]" />
+    <PackageReference Update="Microsoft.VSSDK.BuildTools" Version="[15.9.3039]" />
     <PackageReference Update="Xamarin.VSSDK.BuildTools" Version="[0.3.0-alpha.17]" />
     <PackageReference Update="MSBuilder.ThisAssembly.Metadata" Version="[0.1.3]" />
     <PackageReference Update="xunit" Version="[2.4.0]" />
