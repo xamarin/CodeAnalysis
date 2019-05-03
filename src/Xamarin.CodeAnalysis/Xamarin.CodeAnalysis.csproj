@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GuiLabs.Language.Xml" />
+    <PackageReference Include="GuiLabs.Language.Xml" CopyLocal="true" IncludeInVSIX="true" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" />
     <InternalsVisibleTo Include="Xamarin.CodeAnalysis.Tests" />
   </ItemGroup>
@@ -30,8 +30,7 @@
 
   <ItemGroup>
     <None Update="*.targets" Condition="'$(ExcludeTargets)' != 'true'" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Xamarin.CodeAnalysis.ImportAfter.targets" 
-          VSIXSubPathOverride="Current\Microsoft.Common.Targets\ImportAfter" />
+    <None Update="Xamarin.CodeAnalysis.ImportAfter.targets" VSIXSubPathOverride="Current\Microsoft.Common.Targets\ImportAfter" />
   </ItemGroup>
 
 </Project>

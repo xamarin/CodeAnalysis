@@ -33,7 +33,7 @@ In order to dogfood the enhanced code analysis, follow these steps:
 
 First build:
 
-* Open an administrator developer command prompt and run `msbuild Xamarin.CodeAnalysis.sln /restore /t:configure`
+* Open an administrator developer command prompt and run `msbuild Xamarin.CodeAnalysis.sln /restore`
 
 > This is necessary because the extension provides MSBuild targets that need to be symlinked from the 
 > `Exp` hive location to the `VsInstallDir\MSBuild` location, which requires elevation.

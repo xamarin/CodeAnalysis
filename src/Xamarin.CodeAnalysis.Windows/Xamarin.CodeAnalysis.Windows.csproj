@@ -4,14 +4,14 @@
   <PropertyGroup>
     <Dev>$(VisualStudioVersion.Substring(0, 2))</Dev>
     <TargetFramework>net472</TargetFramework>
-    <Platforms>AnyCPU;x86</Platforms>
+    <Platforms>x86</Platforms>
     <Platform>x86</Platform>
 
     <RootNamespace>Xamarin.CodeAnalysis</RootNamespace>
 
     <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
     <IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
-    <DefaultIncludeOutputGroupsInVSIX>BuiltProjectOutputGroup;DebugSymbolsProjectOutputGroup;GetCopyToOutputDirectoryItems;SatelliteDllsProjectOutputGroup</DefaultIncludeOutputGroupsInVSIX>
+    <DefaultIncludeOutputGroupsInVSIX>BuiltProjectOutputGroup;BuiltProjectOutputGroupDependencies;DebugSymbolsProjectOutputGroup;DocumentationProjectOutputGroup;GetCopyToOutputDirectoryItems;SatelliteDllsProjectOutputGroup</DefaultIncludeOutputGroupsInVSIX>
 
     <TargetVsixContainerName>Xamarin.CodeAnalysis.vsix</TargetVsixContainerName>
 
@@ -51,7 +51,7 @@
       <!-- For inclusion in the VSIX install path, we don't want the .targets -->
       <AdditionalProperties>ExcludeTargets=true</AdditionalProperties>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj">
+    <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj" Condition="$(CI)">
       <AdditionalProperties>BuildReference=false</AdditionalProperties>
       <Name>Xamarin.CodeAnalysis</Name>
       <BuildProject>false</BuildProject>
@@ -105,15 +105,6 @@
   <Target Name="IsSystemComponent" Returns="$(IsSystemComponent)" />
   <Target Name="IsCI" Returns="$(CI)" />
 
-  <!--
-  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-    <BuildDependsOn Condition="!$(CI)">
-      $(BuildDependsOn);
-      SymLink
-    </BuildDependsOn>
-  </PropertyGroup>
-  -->
-
   <Target Name="ApplyVSIXSubPathOverride" AfterTargets="GetVsixSourceItems">
     <ItemGroup>
       <VSIXSourceItem Update="@(VSIXSourceItem)" Condition="'%(VSIXSourceItem.VSIXSubPathOverride)' != ''">
@@ -125,7 +116,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="SymLink" DependsOnTargets="IsAdministrator;CollectLinkItems;ReplaceLinkItems" />
+  <Target Name="AfterBuild" DependsOnTargets="IsAdministrator;CollectLinkItems;ReplaceLinkItems" />
   
   <Target Name="IsAdministrator">
     <IsAdministrator>
@@ -158,16 +149,12 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="ReplaceLinkItems" Condition="'@(MkLinkSource)' != '' And '$(IsAdministrator)' == 'true'">
-    <Message Text="In $(Configuration) builds, we attempt to symlink MSBuild files with current project output." Importance="high" />
-    <ItemGroup>
-      <_FilesToDelete Include="@(MkLinkSource -&gt; WithMetadataValue('Exists', 'true'))" />
-    </ItemGroup>
-    <Exec Command="del &quot;%(_FilesToDelete.FullPath)&quot;" EchoOff="true" Condition="'@(_FilesToDelete)' != ''" />
+  <Target Name="ReplaceLinkItems" Inputs="@(MkLinkSource)" Outputs="%(MkLinkSource.Identity)-BATCH" Condition="'@(MkLinkSource)' != '' And '$(IsAdministrator)' == 'true'">
+    <Exec Command="del &quot;%(MkLinkSource.FullPath)&quot;" EchoOff="true" Condition="Exists('%(MkLinkSource.FullPath)')" />
     <Exec Command="mklink &quot;%(MkLinkSource.Identity)&quot; &quot;%(MkLinkSource.LinkTarget)&quot;" ConsoleToMSBuild="true" EchoOff="true" Condition="Exists('%(MkLinkSource.RootDir)%(MkLinkSource.Directory)')">
       <Output TaskParameter="ConsoleOutput" ItemName="MkLinked" />
     </Exec>
-    <Message Importance="high" Text="%(MkLinked.Identity)" Condition="'@(MkLinked)' != ''" />
+    <Message Importance="high" Text="%(MkLinkSource.Identity)" Condition="'@(MkLinkSource)' != ''" />
   </Target>
   
   <UsingTask TaskName="IsAdministrator" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">

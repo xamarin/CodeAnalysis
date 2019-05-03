@@ -50,6 +50,44 @@
     </ItemGroup>
   </Target>
 
+  <ItemDefinitionGroup>
+    <ReferencePath>
+      <NuGetPackageId></NuGetPackageId>
+    </ReferencePath>
+    <ReferenceCopyLocalPaths>
+      <NuGetPackageId></NuGetPackageId>
+    </ReferenceCopyLocalPaths>
+  </ItemDefinitionGroup>
+
+  <Target Name="AugmentPackageReferenceAssemblies" Inputs="@(PackageReference)" Outputs="%(PackageReference.Identity)-BATCH"
+          AfterTargets="ResolveAssemblyReferences" DependsOnTargets="ResolveAssemblyReferences">
+    <PropertyGroup>
+      <PackageId>%(PackageReference.Identity)</PackageId>
+      <CopyLocal>%(PackageReference.CopyLocal)</CopyLocal>
+      <Private>%(PackageReference.Private)</Private>
+      <IncludeInVSIX>%(PackageReference.IncludeInVSIX)</IncludeInVSIX>
+      <NewMetadata>$(CopyLocal)$(Private)$(IncludeInVSIX)</NewMetadata>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(NewMetadata)' != ''">
+      <NuGetReferencePath Include="@(ReferencePath)" Condition="'%(NuGetPackageId)' == '$(PackageId)'">
+        <CopyLocal Condition="'$(CopyLocal)' != ''">$(CopyLocal)</CopyLocal>
+        <Private Condition="'$(Private)' != ''">$(Private)</Private>
+        <IncludeInVSIX Condition="'$(IncludeInVSIX)' != ''">$(IncludeInVSIX)</IncludeInVSIX>
+      </NuGetReferencePath>
+      <ReferencePath Remove="@(NuGetReferencePath)" />
+      <ReferencePath Include="@(NuGetReferencePath)" />
+
+      <NuGetReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths)" Condition="'%(NuGetPackageId)' == '$(PackageId)'">
+        <CopyLocal Condition="'$(CopyLocal)' != ''">$(CopyLocal)</CopyLocal>
+        <Private Condition="'$(Private)' != ''">$(Private)</Private>
+        <IncludeInVSIX Condition="'$(IncludeInVSIX)' != ''">$(IncludeInVSIX)</IncludeInVSIX>
+      </NuGetReferenceCopyLocalPaths>
+      <ReferenceCopyLocalPaths Remove="@(NuGetReferenceCopyLocalPaths)" />
+      <ReferenceCopyLocalPaths Include="@(NuGetReferenceCopyLocalPaths)" />
+    </ItemGroup>
+  </Target>
+
   <Import Project="GenerateInternalsVisibleTo.targets" />
 
 </Project>
