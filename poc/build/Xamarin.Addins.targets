@@ -1,0 +1,38 @@
+<Project>
+
+  <Target Name="RegisterAddin" AfterTargets="AfterBuild" DependsOnTargets="RegisterAddin_SideBySide;RegisterAddin_AppBundle" Condition=" '$(MPackID)' != '' "/>
+
+  <Target Name="RegisterAddin_SideBySide" Condition="$(_UsingSideBySide)">
+    <MakeDir Directories="$(_MonoDevelopLocalConfigDir)" />
+    <WriteLinesToFile File="$(_MonoDevelopLocalConfigDir)xamarin-addins_$(AssemblyName).addins" Lines="%3CAddins%3E%3CDirectory include-subdirs='false'%3E$(MSBuildProjectDirectory)\$(OutputPath)%3C/Directory%3E%3C/Addins%3E" Overwrite="true" />
+  </Target>
+
+  <Target Name="RegisterAddin_AppBundle" Condition="$(_UsingAppBundle)">
+    <PropertyGroup>
+      <_AppBundleXamarinAddinsAddinDir>$(ExternalVisualStudioApp)/Contents/Resources/lib/monodevelop/AddIns/$(MPackID)/</_AppBundleXamarinAddinsAddinDir>
+      <_AppBundleXamarinAddinsLocalDir>$(ExternalVisualStudioApp)/Contents/Resources/lib/monodevelop/AddIns/xamarin-addins-local/</_AppBundleXamarinAddinsLocalDir>
+    </PropertyGroup>
+    <RemoveDir Directories="$(_AppBundleXamarinAddinsAddinDir)" Condition=" Exists ('$(_AppBundleXamarinAddinsAddinDir)') " />
+    <MakeDir Directories="$(_AppBundleXamarinAddinsLocalDir)" />
+    <WriteLinesToFile File="$(_AppBundleXamarinAddinsLocalDir)/xamarin-addins_$(AssemblyName).addins" Lines="%3CAddins%3E%3CDirectory include-subdirs='false'%3E$(MSBuildProjectDirectory)\$(OutputPath)%3C/Directory%3E%3C/Addins%3E" Overwrite="true" />
+  </Target>
+
+  <Target Name="GenerateMPack" DependsOnTargets="$(MPackDependsOn)" />
+
+  <Target Name="CreateMPack">
+    <PropertyGroup>
+      <_MPackOutputDir>$(RootDirectory)\build\mpacks/</_MPackOutputDir>
+      <_MPackOutputFilename>$(_MPackOutputDir)\$(MPackID)_1.0.0.0.mpack</_MPackOutputFilename>
+    </PropertyGroup>
+
+    <Message Text=">> Creating mpack $(OutputPath)" />
+
+    <MakeDir Directories="$(_MPackOutputDir)" />
+    <Delete Files="$(_MPackOutputFilename)" Condition=" Exists ('$(_MPackOutputFilename)') " />
+
+    <!-- Initial version of this is to bundle up all the files that would have been in the app bundle before the split, 
+         for that we simply need to just zip up the output folder -->
+    <Exec Command="zip -r &quot;$(_MPackOutputFilename)&quot; *" WorkingDirectory="$(OutputPath)" />
+  </Target>
+
+</Project>

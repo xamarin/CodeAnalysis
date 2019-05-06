@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Setup some standardised locations -->
+  <PropertyGroup>
+    <RootDirectory>$(MSBuildThisFileDirectory)\..</RootDirectory>
+    <MonoDevelopDirectory>$(RootDirectory)\..\monodevelop</MonoDevelopDirectory>
+    <MdaddinsDirectory>$(RootDirectory)\..\md-addins</MdaddinsDirectory>
+	<_DefaultExternalVisualStudioAppPath>/Applications/provisionator/Visual Studio.app/</_DefaultExternalVisualStudioAppPath>
+  </PropertyGroup>
+
+  <!-- Ensure these are always initialized -->
+  <PropertyGroup>
+    <_UsingAppBundle>false</_UsingAppBundle>
+    <_UsingSideBySide>false</_UsingSideBySide>
+  </PropertyGroup>
+
+  <!-- Try enable our IDE integration -->
+  <PropertyGroup Condition=" '$(WithMonoDevelop)' == '' ">
+    <WithMonoDevelop>true</WithMonoDevelop>
+  </PropertyGroup>
+
+  <!-- If the user didn't set an explicit external app bundle, try use a side by side first, 
+  then use an app bundle if we have one in the default location -->
+  <PropertyGroup Condition=" '$(ExternalVisualStudioApp)' == '' And $(WithMonoDevelop) ">
+    <_UsingSideBySide Condition=" Exists ('$(MonoDevelopDirectory)') And Exists ('$(MdaddinsDirectory)') ">true</_UsingSideBySide>
+    <ExternalVisualStudioApp Condition=" ! '$(_UsingSideBySide)' ">$(_DefaultExternalVisualStudioAppPath)</ExternalVisualStudioApp>
+  </PropertyGroup>
+
+  <!-- Set the vars properly if the user supplied an app bundle, or if we're provisioning one -->
+  <PropertyGroup Condition=" '$(ExternalVisualStudioApp)' != '' And $(WithMonoDevelop) ">
+    <_UsingAppBundle>true</_UsingAppBundle>
+    <_UsingSideBySide>false</_UsingSideBySide>
+  </PropertyGroup>
+
+  <!-- Set the default start actions depending on whether this is side-by-side or using an app bundle -->
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' And $(_UsingSideBySide)">
+    <StartAction>Program</StartAction>
+    <StartProgram>$(MonoDevelopDirectory)\main\build\bin\MonoDevelop.exe</StartProgram>
+    <StartArguments>--no-redirect</StartArguments>
+    <ConsolePause>false</ConsolePause>
+    <ExternalConsole>false</ExternalConsole>
+    <StartWorkingDirectory>$(OutputPath)</StartWorkingDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' And $(_UsingAppBundle)">
+    <StartAction>Program</StartAction>
+    <StartProgram>$(ExternalVisualStudioApp)\Contents\Resources\lib\monodevelop\bin\VisualStudio.exe</StartProgram>
+    <StartArguments>--no-redirect</StartArguments>
+    <ConsolePause>false</ConsolePause>
+    <ExternalConsole>false</ExternalConsole>
+    <StartWorkingDirectory>$(OutputPath)</StartWorkingDirectory>
+  </PropertyGroup>
+
+
+
+  <!-- Side-by-Side -->
+  <PropertyGroup Condition=" '$(_UsingSideBySide)' ">
+    <!-- The path to write our config files so the side-by-side checkout loads our addins -->
+    <_MonoDevelopLocalConfigDir>$(MonoDevelopDirectory)/local-config/</_MonoDevelopLocalConfigDir>
+    <!-- The path to the monodevelop bin dir where the binaries are stored -->
+    <_MonoDevelopLocalBuildDir>$(MonoDevelopDirectory)/main/build/</_MonoDevelopLocalBuildDir>
+
+    <!-- A side-by-side build should always have `mdtool`, but check for both -->
+    <VSTool Condition="Exists ('$(_MonoDevelopLocalBuildDir)bin\mdtool.exe')">$(_MonoDevelopLocalBuildDir)bin\mdtool.exe</VSTool>
+    <VSTool Condition="Exists ('$(_MonoDevelopLocalBuildDir)bin\vstool.exe')">$(_MonoDevelopLocalBuildDir)bin\vstool.exe</VSTool>
+
+    <!-- 
+      Add the various search paths so we can find the MonoDevelop / md-addins assemblies in the side-by-side build.
+      For the most part, we can add them after the default search path, but for Mono.Debugger.Soft we want to override
+      before because Mono.Debugger.Soft.dll is shipped with mono and we use a different one.
+    -->
+    <VsmReferencePathPre>$(VsmReferencePathPre);$(MonoDevelopDirectory)\main\build\AddIns\MonoDevelop.Debugger.Soft</VsmReferencePathPre>
+
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\external</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\MonoDevelop.ConnectedServices</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\MonoDevelop.Debugger</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\MonoDevelop.Refactoring</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\MonoDevelop.DesignerSupport</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\MonoDevelop.UnitTesting</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\VersionControl</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\CSharpBinding</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\MonoDevelop.PackageManagement</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\Xml</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\MonoDevelop.DotNetCore</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\AddIns\DisplayBindings\SourceEditor</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MdaddinsDirectory)\Xamarin.Ide\build</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MdaddinsDirectory)\Azure\Xamarin.AzureSupport\build</VsmReferencePathPost>
+
+    <!-- these definitely need to go after the default assembly search path -->
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(MonoDevelopDirectory)\main\build\bin</VsmReferencePathPost>
+  </PropertyGroup>
+
+  <!-- App bundle -->
+  <PropertyGroup Condition=" '$(_UsingAppBundle)' ">
+    <!-- 
+      Add the various search paths so we can find the MonoDevelop / md-addins assemblies in the side-by-side build.
+      For the most part, we can add them after the default search path, but for Mono.Debugger.Soft we want to override
+      before because Mono.Debugger.Soft.dll is shipped with mono and we use a different one.
+  -->
+
+    <!-- The root path where the binaries we need will be located -->
+    <_MDAppBundleDir>$(ExternalVisualStudioApp)\Contents\Resources\lib\monodevelop\</_MDAppBundleDir>
+    <!-- This is where most of the monodevelop binaries will be -->
+    <_MDAppBundleBinDir>$(_MDAppBundleDir)bin\</_MDAppBundleBinDir>
+    <!-- This is where most of the md-addins binaries will be located -->
+    <_MDAppBundleAddinsDir>$(_MDAppBundleDir)AddIns\</_MDAppBundleAddinsDir>
+    <!-- The path where we expect to find vstool -->
+    <_MDAppBundleCommandDir>$(ExternalVisualStudioApp)\Contents\MacOS\</_MDAppBundleCommandDir>
+
+
+    <!-- Locate our vstool binary. The app bundle will never have mdtool. -->
+    <VSTool>$(_MDAppBundleBinDir)vstool.exe</VSTool>
+
+    <VsmReferencePathPre>$(VsmReferencePathPre);$(_MDAppBundleAddinsDir)MonoDevelop.Debugger.Soft</VsmReferencePathPre>
+
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)MonoDevelop.ConnectedServices</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)MonoDevelop.Debugger</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)MonoDevelop.Refactoring</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)MonoDevelop.DesignerSupport</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)MonoDevelop.UnitTesting</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)VersionControl</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)CSharpBinding</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)MonoDevelop.PackageManagement</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)Xml</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)MonoDevelop.DotNetCore</VsmReferencePathPost>
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)DisplayBindings\SourceEditor</VsmReferencePathPost>
+    
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)Xamarin.Ide</VsmReferencePathPost>
+
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleAddinsDir)Xamarin.AzureSupport</VsmReferencePathPost>
+
+    <!-- these definitely need to go after the default assembly search path -->
+    <VsmReferencePathPost>$(VsmReferencePathPost);$(_MDAppBundleBinDir)</VsmReferencePathPost>
+
+  </PropertyGroup>
+
+  <!-- Now mess with resolving assemblies -->
+  <Target Name="InsertVSMReferencePaths" BeforeTargets="ResolveAssemblyReferences">
+    <PropertyGroup>
+      <AssemblySearchPaths>$(VsmReferencePathPre);$(AssemblySearchPaths);$(VsmReferencePathPost)</AssemblySearchPaths>
+      <ReferencePath>$(ReferencePath);$(VsmReferencePathPre);$(VsmReferencePathPost)</ReferencePath>
+    </PropertyGroup>
+  </Target>
+
+  <!-- Define default Mpack dependencies -->
+  <PropertyGroup>
+    <MPackDependsOn>
+      CreateMPack;
+    </MPackDependsOn>
+  </PropertyGroup>
+
+</Project>

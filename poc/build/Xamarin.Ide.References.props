@@ -1,0 +1,18 @@
+<Project>
+
+	<ItemGroup >
+		<Reference Include="Xamarin.Ide">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Xamarin.Components.Ide">
+			<Private>False</Private>
+		</Reference>
+    <Reference Include="Xamarin.Ide.Mac">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Xamarin.IdeCustomization">
+      <Private>False</Private>
+    </Reference>
+	</ItemGroup>
+
+</Project>

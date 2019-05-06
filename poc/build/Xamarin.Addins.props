@@ -1,0 +1,15 @@
+<Project>
+
+	<Import Project="$(MSBuildThisFileDirectory)\Xamarin.Addins.BeforeCommon.props" />
+
+  <PropertyGroup>
+    <EditorReferencesProps>$(MSBuildThisFileDirectory)\Editor.References.props</EditorReferencesProps>
+    <XamarinIdeReferencesProps>$(MSBuildThisFileDirectory)\Xamarin.Ide.References.props</XamarinIdeReferencesProps>
+  </PropertyGroup>
+
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="'$(MicrosoftCommonPropsHasBeenImported)' != 'true'" />
+	<Import Project="$(MSBuildThisFileDirectory)\Xamarin.Addins.AfterCommon.props" />
+
+  <Import Project="$(MSBuildThisFileDirectory)\Xamarin.Addins.targets" />
+
+</Project>

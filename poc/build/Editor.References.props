@@ -1,0 +1,49 @@
+<Project>
+
+	<!-- Set of assemblies needed when working with editor and code -->
+	<ItemGroup >
+    	<Reference Include="Mono.TextEditor">
+			<Private>False</Private>
+    	</Reference>
+		<Reference Include="ICSharpCode.NRefactory">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="ICSharpCode.NRefactory.CSharp">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="ICSharpCode.NRefactory.Cecil">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="RefactoringEssentials">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="System.Reflection.Metadata">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="System.Collections.Immutable">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Microsoft.CodeAnalysis">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Microsoft.CodeAnalysis.CSharp">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Microsoft.CodeAnalysis.Workspaces">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="MonoDevelop.SourceEditor">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="MonoDevelop.Refactoring">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="MonoDevelop.CSharpBinding">
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+
+</Project>
