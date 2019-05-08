@@ -190,6 +190,7 @@
     <Compile Include="ResourceCompletionProvider.cs" />
     <Compile Include="XAA1001StringLiteralToResource.cs" />
     <Compile Include="XAA1002ResourceIdentifierNotFound.cs" />
+    <Compile Include="AddinInitializer.cs" />
   </ItemGroup>
  <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
