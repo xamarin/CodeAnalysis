@@ -1,25 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CodeFixes;
-using System.Threading;
-using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Composition;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Editing;
-using System.Text;
-using System.Xml.Linq;
 using System.ComponentModel;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using System.Composition;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Editing;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.Language.Xml;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace Xamarin.CodeAnalysis{
+namespace Xamarin.CodeAnalysis
+{
 
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class XAA1001StringLiteralToResource : DiagnosticAnalyzer
@@ -199,8 +199,9 @@ namespace Xamarin.CodeAnalysis{
     }
 }
 
-namespace Xamarin.CodeAnalysis {
-	 static class Constants {
+namespace Xamarin.CodeAnalysis
+{
+    static class Constants {
 		public const string AnalyzerCategory = "Xamarin.CodeAnalysis";
 	}
 }

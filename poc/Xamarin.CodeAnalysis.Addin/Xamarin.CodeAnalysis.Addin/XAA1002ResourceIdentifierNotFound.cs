@@ -4,10 +4,11 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using RefactoringEssentials;
+//using RefactoringEssentials;
 
-namespace Xamarin.CodeAnalysis {
-    
+namespace Xamarin.CodeAnalysis
+{
+
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class XAA1002ResourceIdentifierNotFound : DiagnosticAnalyzer
     {
@@ -22,7 +23,7 @@ namespace Xamarin.CodeAnalysis {
             new DiagnosticDescriptor(DiagnosticId,
 				"Resource id must exist in a resource file", //"Resources.XAA1002_Title",
 				"No resource found with identifier '{0}'.", //"Resources.XAA1002_MessageFormat",
-				DiagnosticAnalyzerCategories.Notifications,
+                "Code Notifications", //DiagnosticAnalyzerCategories.Notifications,
 				DiagnosticSeverity.Error, 
                 true,
 				"Resource identifier must exist in an Android resource file.", //"Resources.XAA1002_Description", 

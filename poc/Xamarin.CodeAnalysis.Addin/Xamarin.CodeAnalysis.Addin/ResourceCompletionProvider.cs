@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -16,7 +15,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Xamarin.CodeAnalysis
 {
-	[ExportCompletionProvider(nameof(ResourceCompletionProvider), LanguageNames.CSharp)]
+    [ExportCompletionProvider(nameof(ResourceCompletionProvider), LanguageNames.CSharp)]
 	public class ResourceCompletionProvider : CompletionProvider
 	{
 		private static readonly CompletionItemRules StandardCompletionRules = CompletionItemRules.Default;
