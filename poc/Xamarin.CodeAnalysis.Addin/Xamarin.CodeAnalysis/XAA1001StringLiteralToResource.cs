@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Language.Xml;
+using Xamarin.CodeAnalysis.Properties;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Xamarin.CodeAnalysis
@@ -33,12 +34,12 @@ namespace Xamarin.CodeAnalysis
 
         static readonly DiagnosticDescriptor Descriptor =
 			new DiagnosticDescriptor (DiagnosticId,
-				"Attribute value should be placed in a resource file.",    //"spike Resources_XAA1001_Title",
-				"Attribute value '{0}' should be placed in a resource file.",    // "spike Resources_XAA1001_MessageFormat", 
+                MyResources.XAA1001_Title,
+                MyResources.XAA1001_MessageFormat, 
                 Constants.AnalyzerCategory, 
                 Microsoft.CodeAnalysis.DiagnosticSeverity.Info, 
                 true,
-				"By placing literal strings in a resource file, it can be easily localized.",                                                       //"spike Resources.XAA1001_Description", 
+                MyResources.XAA1001_Description, 
                 HelpLink);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptor);
@@ -119,7 +120,7 @@ namespace Xamarin.CodeAnalysis
             {
                 context.RegisterCodeFix(
                     CodeAction.Create(
-						"Move string to resource", //"spike Resources_XAA1001_Title",
+						MyResources.XAA1001_ActionTitle,
                         cancellation => CreateChangedSolutionAsync(context, diagnostic, cancellation),
                         nameof(XAA1001CodeFixProvider)),
                     diagnostic);

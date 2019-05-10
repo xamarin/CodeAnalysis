@@ -1,8 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ExtensionModel>
     
+    <Runtime>
+        <Import assembly="Xamarin.CodeAnalysis.dll" />
+    </Runtime>
+    
     <Extension path="/MonoDevelop/Ide/Composition">
-        <Assembly file="Xamarin.CodeAnalysis.Addin.dll"/>
+        <!--Assembly file="Xamarin.CodeAnalysis.Addin.dll"-->
+        <Assembly file="Xamarin.CodeAnalysis.dll"/>
     </Extension>
              
 </ExtensionModel>

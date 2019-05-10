@@ -187,16 +187,18 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
-    <Compile Include="ResourceCompletionProvider.cs" />
-    <Compile Include="XAA1001StringLiteralToResource.cs" />
-    <Compile Include="XAA1002ResourceIdentifierNotFound.cs" />
-    <Compile Include="AddinInitializer.cs" />
   </ItemGroup>
  <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
   </ItemGroup>
  <ItemGroup>
    <None Include="packages.config" />
+ </ItemGroup>
+ <ItemGroup>
+   <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj">
+     <Project>{8A5348CC-C5A8-4D3D-B77E-C3CEE85BE8AF}</Project>
+     <Name>Xamarin.CodeAnalysis</Name>
+   </ProjectReference>
  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -23,7 +23,10 @@ namespace Xamarin.CodeAnalysis
 
 		public override bool ShouldTriggerCompletion(SourceText text, int caretPosition, CompletionTrigger trigger, OptionSet options)
 		{
-			if (trigger.Kind == CompletionTriggerKind.Invoke ||
+            // HACK: REQUIRED TO UPDATE MEF COMPONENTS WITH THE CLASSES FROM THIS DLL
+            if (MonoDevelop.Ide.IdeApp.IsInitialized) { }
+
+            if (trigger.Kind == CompletionTriggerKind.Invoke ||
 				trigger.Kind == CompletionTriggerKind.InvokeAndCommitIfUnique)
 			{
 				return true;

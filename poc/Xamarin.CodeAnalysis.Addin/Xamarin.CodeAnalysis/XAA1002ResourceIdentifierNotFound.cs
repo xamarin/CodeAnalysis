@@ -21,18 +21,20 @@ namespace Xamarin.CodeAnalysis
 
         static readonly DiagnosticDescriptor Descriptor =
             new DiagnosticDescriptor(DiagnosticId,
-				"Resource id must exist in a resource file", //"Resources.XAA1002_Title",
-				"No resource found with identifier '{0}'.", //"Resources.XAA1002_MessageFormat",
+				MyResources.XAA1002_Title,
+                MyResources.XAA1002_MessageFormat,
                 "Code Notifications", //DiagnosticAnalyzerCategories.Notifications,
 				DiagnosticSeverity.Error, 
                 true,
-				"Resource identifier must exist in an Android resource file.", //"Resources.XAA1002_Description", 
+                MyResources.XAA1002_Description,
                 HelpLink);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptor);
 
         public override void Initialize(AnalysisContext context)
         {
+
+
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.RegisterSyntaxNodeAction(AnalyzeLiteral, Microsoft.CodeAnalysis.CSharp.SyntaxKind.StringLiteralExpression);
         }
