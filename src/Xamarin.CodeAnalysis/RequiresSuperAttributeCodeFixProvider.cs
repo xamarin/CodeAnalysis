@@ -31,7 +31,7 @@ namespace RequiresSuperAttribute
 			get { return ImmutableArray.Create (RequiresSuperAttributeAnalyzer.DiagnosticId); }
 		}
 
-		public sealed override FixAllProvider GetFixAllProvider ()
+		public sealed override FixAllProvider GetFixAllProvider () => WellKnownFixAllProviders.BatchFixer;
 		{
 			return WellKnownFixAllProviders.BatchFixer;
 		}
