@@ -66,7 +66,7 @@ namespace RequiresSuperAttribute
 			//      tabs / different numbers of spaces per tab
 			var returnString = memberSymbol.ReturnsVoid ? "" : "return ";
 			var parametersString = string.Join (",", memberSymbol.Parameters.Select ((p) => p.Name).ToArray ()); //creates a string of the method's passed-in arguments separated by commas
-			var newLiteral = SyntaxFactory.ParseStatement (returnString + "base." + memberSymbol.Name + "(" + parametersString + ");")
+			var newLiteral = SyntaxFactory.ParseStatement ($"{returnString} base.{memberSymbol.Name} ({parametersString});")
 			  .WithLeadingTrivia (methodDeclaration.Body.GetLeadingTrivia ().Add (SyntaxFactory.Tab))
 			  .WithTrailingTrivia (methodDeclaration.Body.GetTrailingTrivia ())
 			  .WithAdditionalAnnotations (Formatter.Annotation);
