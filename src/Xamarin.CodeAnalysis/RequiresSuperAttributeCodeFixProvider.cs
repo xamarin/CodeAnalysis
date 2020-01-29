@@ -44,8 +44,8 @@ namespace RequiresSuperAttribute
 
 			// Find the method declaration identified by the diagnostic.
 			var methodDeclaration =
-			  root.FindToken (diagnosticSpan.Start).Parent.AncestorsAndSelf ()
-			  .OfType<MethodDeclarationSyntax> ().First ();
+				root.FindToken (diagnosticSpan.Start).Parent.AncestorsAndSelf ()
+				.OfType<MethodDeclarationSyntax> ().First ();
 
 			// Register a code action that will invoke the fix.
 			context.RegisterCodeFix (CodeAction.Create (Title, c => FixSuperAsync (context.Document, methodDeclaration, c), equivalenceKey: Title), diagnostic);
@@ -76,7 +76,7 @@ namespace RequiresSuperAttribute
 			//TODO: this is hacky ({ } braces are automatically added when you make a new BlockSyntax, and this gets of them but still keeps them in the syntax
 			//      tree. We should consider investigating how to do use something else rather than blocks, or how to create a block without enclosing braces.
 			BlockSyntax blockLiteral = blockLiteralWithBraces.WithOpenBraceToken (SyntaxFactory.MissingToken (SyntaxKind.OpenBraceToken))
-			.WithCloseBraceToken (SyntaxFactory.MissingToken (SyntaxKind.CloseBraceToken));
+				.WithCloseBraceToken (SyntaxFactory.MissingToken (SyntaxKind.CloseBraceToken));
 
 			//Add new block to the pre-existing block.
 			BlockSyntax methodDeclarationBlock = methodDeclaration.Body.AddStatements (blockLiteral);

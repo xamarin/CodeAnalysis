@@ -48,12 +48,12 @@ namespace RequiresSuperAttribute
 			context.EnableConcurrentExecution ();
 			context.RegisterOperationBlockAction ((codeBlockContext) => {
 				// returns if the code block isn't an overridden method
-				var method = (IMethodSymbol)codeBlockContext.OwningSymbol;
+				var method = codeBlockContext.OwningSymbol as IMethodSymbol;
 				if (method == null || !method.IsOverride) { return; }
 
 				// seeing if the [RequiresSuper] attribute is there
 				var baseType = method.ContainingType.BaseType;
-				ISymbol baseMethod = baseType.GetMembers (method.Name).FirstOrDefault ();
+				ISymbol baseMethod = method.OverriddenMethod;
 				// returns if the [RequiresSuper] attribute isn't present
 				if (!baseMethod.GetAttributes ().Any (attr => (attr.AttributeClass.Name == RequiresSuperAttributeName && attr.AttributeClass.ContainingNamespace.Name == RequiresSuperAttributeNamespace))) {
 					return;
@@ -65,7 +65,6 @@ namespace RequiresSuperAttribute
 					{
 						//skips if the operation isn't base.___ or return ___; 
 						if (exp.Kind != OperationKind.ExpressionStatement && exp.Kind != OperationKind.Return) { continue; }
-
 
 						foreach (var child in exp.Children) {
 							// skips if it's not an Invocation Operation
@@ -82,15 +81,18 @@ namespace RequiresSuperAttribute
 							if (instanceOp.ReferenceKind != InstanceReferenceKind.ContainingTypeInstance) { continue; }
 
 							var invokedMethod = invocationOp.TargetMethod;
-							var containingMethod = (IMethodSymbol)codeBlockContext.OwningSymbol;
 
-							var iter = containingMethod;
+							var iter = method; //TODO take code suggestion? 
 							while (iter != null) {
 								iter = iter.OverriddenMethod;
 								if (invokedMethod.Equals (iter)) {
 									return;
 								}
 							}
+							//if (invokedMethod.Equals(method.OverriddenMethod))
+							//{
+							//	return;
+							//}
 						}
 					}
 				}
