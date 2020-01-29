@@ -51,7 +51,7 @@ namespace RequiresSuperAttribute
 			context.RegisterCodeFix (CodeAction.Create (Title, c => FixSuperAsync (context.Document, methodDeclaration, c), equivalenceKey: Title), diagnostic);
 		}
 
-		private async Task<Document> FixSuperAsync (Document document,
+		async Task<Document> FixSuperAsync (Document document,
 		  MethodDeclarationSyntax methodDeclaration,
 		  CancellationToken cancellationToken)
 		{
