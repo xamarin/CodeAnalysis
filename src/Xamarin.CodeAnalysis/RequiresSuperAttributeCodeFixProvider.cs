@@ -31,10 +31,7 @@ namespace RequiresSuperAttribute
 			get { return ImmutableArray.Create (RequiresSuperAttributeAnalyzer.DiagnosticId); }
 		}
 
-		public sealed override FixAllProvider GetFixAllProvider ()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
+		public sealed override FixAllProvider GetFixAllProvider () => WellKnownFixAllProviders.BatchFixer;
 
 		public sealed override async Task RegisterCodeFixesAsync (CodeFixContext context)
 		{
@@ -44,19 +41,19 @@ namespace RequiresSuperAttribute
 
 			// Find the method declaration identified by the diagnostic.
 			var methodDeclaration =
-			  root.FindToken (diagnosticSpan.Start).Parent.AncestorsAndSelf ()
-			  .OfType<MethodDeclarationSyntax> ().First ();
+				root.FindToken (diagnosticSpan.Start).Parent.AncestorsAndSelf ()
+				.OfType<MethodDeclarationSyntax> ().First ();
 
 			// Register a code action that will invoke the fix.
 			context.RegisterCodeFix (CodeAction.Create (Title, c => FixSuperAsync (context.Document, methodDeclaration, c), equivalenceKey: Title), diagnostic);
 		}
 
-		private async Task<Document> FixSuperAsync (Document document,
+		async Task<Document> FixSuperAsync (Document document,
 		  MethodDeclarationSyntax methodDeclaration,
 		  CancellationToken cancellationToken)
 		{
 			//Find the node to fix.
-			var semanticModel = await document.GetSemanticModelAsync (cancellationToken);
+			var semanticModel = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 			var memberSymbol = semanticModel.GetDeclaredSymbol (methodDeclaration) as IMethodSymbol;
             if (memberSymbol == null)
                 return document;
@@ -67,8 +64,13 @@ namespace RequiresSuperAttribute
 			//      trivia of the method body block, but we should consider investigating if this behaves as expected when the IDE is set to spaces vs
 			//      tabs / different numbers of spaces per tab
 			var returnString = memberSymbol.ReturnsVoid ? "" : "return ";
+<<<<<<< HEAD
 			var parametersString = string.Join (",", memberSymbol.Parameters.Select ((p) => p.Name)); //creates a string of the method's passed-in arguments separated by commas
 			var newLiteral = SyntaxFactory.ParseStatement (returnString + "base." + memberSymbol.Name + "(" + parametersString + ");")
+=======
+			var parametersString = string.Join (",", memberSymbol.Parameters.Select ((p) => p.Name).ToArray ()); //creates a string of the method's passed-in arguments separated by commas
+			var newLiteral = SyntaxFactory.ParseStatement ($"{returnString} base.{memberSymbol.Name} ({parametersString});")
+>>>>>>> c0eec4abacee0fcb234d420a88f6ecb0a1dbe909
 			  .WithLeadingTrivia (methodDeclaration.Body.GetLeadingTrivia ().Add (SyntaxFactory.Tab))
 			  .WithTrailingTrivia (methodDeclaration.Body.GetTrailingTrivia ())
 			  .WithAdditionalAnnotations (Formatter.Annotation);
@@ -78,13 +80,13 @@ namespace RequiresSuperAttribute
 			//TODO: this is hacky ({ } braces are automatically added when you make a new BlockSyntax, and this gets of them but still keeps them in the syntax
 			//      tree. We should consider investigating how to do use something else rather than blocks, or how to create a block without enclosing braces.
 			BlockSyntax blockLiteral = blockLiteralWithBraces.WithOpenBraceToken (SyntaxFactory.MissingToken (SyntaxKind.OpenBraceToken))
-			.WithCloseBraceToken (SyntaxFactory.MissingToken (SyntaxKind.CloseBraceToken));
+				.WithCloseBraceToken (SyntaxFactory.MissingToken (SyntaxKind.CloseBraceToken));
 
 			//Add new block to the pre-existing block.
 			BlockSyntax methodDeclarationBlock = methodDeclaration.Body.AddStatements (blockLiteral);
 
 			//Swap new node into syntax tree.
-			var root = await document.GetSyntaxRootAsync ();
+			var root = await document.GetSyntaxRootAsync ().ConfigureAwait (false);
 			var newRoot = root.ReplaceNode (methodDeclaration.Body, methodDeclarationBlock);
 			var newDocument = document.WithSyntaxRoot (newRoot);
 

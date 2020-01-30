@@ -48,13 +48,18 @@ namespace RequiresSuperAttribute
 			context.EnableConcurrentExecution ();
 			context.RegisterOperationBlockAction ((codeBlockContext) => {
 				// returns if the code block isn't an overridden method
+<<<<<<< HEAD
 				var method = (IMethodSymbol)codeBlockContext.OwningSymbol;
 				if (method == null || !method.IsOverride)
                     return;
+=======
+				var method = codeBlockContext.OwningSymbol as IMethodSymbol;
+				if (method == null || !method.IsOverride) { return; }
+>>>>>>> c0eec4abacee0fcb234d420a88f6ecb0a1dbe909
 
 				// seeing if the [RequiresSuper] attribute is there
 				var baseType = method.ContainingType.BaseType;
-				ISymbol baseMethod = baseType.GetMembers (method.Name).FirstOrDefault ();
+				ISymbol baseMethod = method.OverriddenMethod;
 				// returns if the [RequiresSuper] attribute isn't present
 				if (!baseMethod.GetAttributes ().Any (attr => (attr.AttributeClass.Name == RequiresSuperAttributeName && attr.AttributeClass.ContainingNamespace.Name == RequiresSuperAttributeNamespace)))
 					return;
@@ -66,7 +71,6 @@ namespace RequiresSuperAttribute
 						//skips if the operation isn't base.___ or return ___; 
 						if (exp.Kind != OperationKind.ExpressionStatement && exp.Kind != OperationKind.Return)
                             continue;
-
 
 						foreach (var child in exp.Children) {
 							// skips if it's not an Invocation Operation
