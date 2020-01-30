@@ -49,9 +49,9 @@ namespace Xamarin.CodeAnalysis
 
         public override Task<CompletionChange> GetChangeAsync(Document document, CompletionItem item, char? commitKey, CancellationToken cancellationToken)
         {
-            if (item.Properties.TryGetValue("Start", out var start) && 
-                int.TryParse(start, out var s) && 
-                item.Properties.TryGetValue("Length", out var length) && 
+            if (item.Properties.TryGetValue("Start", out var start) &&
+                int.TryParse(start, out var s) &&
+                item.Properties.TryGetValue("Length", out var length) &&
                 int.TryParse(length, out var l))
             {
                 return Task.FromResult(CompletionChange.Create(new TextChange(new TextSpan(s, l), item.SortText)));
@@ -74,7 +74,7 @@ namespace Xamarin.CodeAnalysis
             var token = root.FindToken(span.Start);
             var node = token.Parent?.AncestorsAndSelf().FirstOrDefault(a => a.FullSpan.Contains(span));
             if (node is LiteralExpressionSyntax literal &&
-                node?.Parent is AttributeArgumentSyntax argument && 
+                node?.Parent is AttributeArgumentSyntax argument &&
                 // TODO: we support only property syntax for completion in attributes, 
                 // since that's what XA has right now anyway, and we need to lookup the 
                 // [Category] attribute on the property.
@@ -123,7 +123,7 @@ namespace Xamarin.CodeAnalysis
                     }
 
                     var compilation = await document.Project.GetCompilationAsync(completionContext.CancellationToken);
-                    var resourceDesignerAttribute = compilation.Assembly.GetAttributes().FirstOrDefault(attr 
+                    var resourceDesignerAttribute = compilation.Assembly.GetAttributes().FirstOrDefault(attr
                         => attr.AttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::Android.Runtime.ResourceDesignerAttribute");
 
                     if (resourceDesignerAttribute != null && resourceDesignerAttribute.ConstructorArguments.Any())
