@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 //
 // RequiresSuperAttributeCodeFixProvider.cs:
 //
@@ -58,6 +58,8 @@ namespace RequiresSuperAttribute
 			//Find the node to fix.
 			var semanticModel = await document.GetSemanticModelAsync (cancellationToken);
 			var memberSymbol = semanticModel.GetDeclaredSymbol (methodDeclaration) as IMethodSymbol;
+            if (memberSymbol == null)
+                return document;
 
 			//Generate the new base.[methodName]([arguments]) block. If the method needs to return the base call,
 			//it generates return base.[methodName]([arguments])
@@ -65,7 +67,7 @@ namespace RequiresSuperAttribute
 			//      trivia of the method body block, but we should consider investigating if this behaves as expected when the IDE is set to spaces vs
 			//      tabs / different numbers of spaces per tab
 			var returnString = memberSymbol.ReturnsVoid ? "" : "return ";
-			var parametersString = string.Join (",", memberSymbol.Parameters.Select ((p) => p.Name).ToArray ()); //creates a string of the method's passed-in arguments separated by commas
+			var parametersString = string.Join (",", memberSymbol.Parameters.Select ((p) => p.Name)); //creates a string of the method's passed-in arguments separated by commas
 			var newLiteral = SyntaxFactory.ParseStatement (returnString + "base." + memberSymbol.Name + "(" + parametersString + ");")
 			  .WithLeadingTrivia (methodDeclaration.Body.GetLeadingTrivia ().Add (SyntaxFactory.Tab))
 			  .WithTrailingTrivia (methodDeclaration.Body.GetTrailingTrivia ())
