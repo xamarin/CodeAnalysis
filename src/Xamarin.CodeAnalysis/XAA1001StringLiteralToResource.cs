@@ -32,13 +32,13 @@ namespace Xamarin.CodeAnalysis
         const string HelpLink = "https://github.com/xamarin/CodeAnalysis/blob/master/docs/XAA1001.md";
 
         static readonly DiagnosticDescriptor Descriptor =
-            new DiagnosticDescriptor(DiagnosticId, 
+            new DiagnosticDescriptor(DiagnosticId,
                 Localizable(nameof(Resources.XAA1001_Title)),
-                Localizable(nameof(Resources.XAA1001_MessageFormat)), 
-                Constants.AnalyzerCategory, 
-                Microsoft.CodeAnalysis.DiagnosticSeverity.Info, 
-                true, 
-                Localizable(nameof(Resources.XAA1001_Description)), 
+                Localizable(nameof(Resources.XAA1001_MessageFormat)),
+                Constants.AnalyzerCategory,
+                Microsoft.CodeAnalysis.DiagnosticSeverity.Info,
+                true,
+                Localizable(nameof(Resources.XAA1001_Description)),
                 HelpLink);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptor);
@@ -170,10 +170,10 @@ namespace Xamarin.CodeAnalysis
 
             var newXml = documentSyntax.RootSyntax.AddChild(elementSyntax.RootSyntax);
             var docNode = SyntaxFactory.XmlDocument(
-                documentSyntax.Prologue, documentSyntax.PrecedingMisc, 
+                documentSyntax.Prologue, documentSyntax.PrecedingMisc,
                 newXml.AsNode, documentSyntax.FollowingMisc,
                 documentSyntax.SkippedTokens, documentSyntax.Eof);
-            
+
             var text = await resourceDoc.GetTextAsync(cancellation);
             var newDoc = context.Document.Project.Solution
                 .WithAdditionalDocumentText(resourceDoc.Id, SourceText.From(
@@ -183,8 +183,8 @@ namespace Xamarin.CodeAnalysis
 
             var generator = SyntaxGenerator.GetGenerator(newDoc);
             newDoc = newDoc.WithSyntaxRoot(generator.ReplaceNode(
-                await newDoc.GetSyntaxRootAsync(), 
-                literal, 
+                await newDoc.GetSyntaxRootAsync(),
+                literal,
                 literal.WithToken(Literal($"@string/{key}"))));
 
             return newDoc.Project.Solution;

@@ -20,13 +20,13 @@ namespace Xamarin.CodeAnalysis
         const string HelpLink = "https://github.com/xamarin/CodeAnalysis/blob/master/docs/XAA1002.md";
 
         static readonly DiagnosticDescriptor Descriptor =
-            new DiagnosticDescriptor(DiagnosticId, 
+            new DiagnosticDescriptor(DiagnosticId,
                 Localizable(nameof(Resources.XAA1002_Title)),
-                Localizable(nameof(Resources.XAA1002_MessageFormat)), 
-                Constants.AnalyzerCategory, 
-                DiagnosticSeverity.Error, 
-                true, 
-                Localizable(nameof(Resources.XAA1002_Description)), 
+                Localizable(nameof(Resources.XAA1002_MessageFormat)),
+                Constants.AnalyzerCategory,
+                DiagnosticSeverity.Error,
+                true,
+                Localizable(nameof(Resources.XAA1002_Description)),
                 HelpLink);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptor);
@@ -45,16 +45,16 @@ namespace Xamarin.CodeAnalysis
                 // about, we want to be conservative in the errors we report for now.
                 argument.NameEquals != null &&
                 context.Node.Parent?.Parent?.Parent is AttributeSyntax attribute &&
-                literal.GetText().ToString().Trim('"') is string value && 
+                literal.GetText().ToString().Trim('"') is string value &&
                 value.StartsWith("@") &&
-                value.IndexOf('/') is int slash && 
+                value.IndexOf('/') is int slash &&
                 slash != -1)
             {
                 var category = value.Substring(1, slash - 1);
                 var identifier = value.Substring(slash + 1).Replace('.', '_');
 
                 var compilation = context.Compilation;
-                var resourceDesignerAttribute = compilation.Assembly.GetAttributes().FirstOrDefault(attr => 
+                var resourceDesignerAttribute = compilation.Assembly.GetAttributes().FirstOrDefault(attr =>
                     attr.AttributeClass.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == "global::Android.Runtime.ResourceDesignerAttribute");
 
                 if (resourceDesignerAttribute != null && resourceDesignerAttribute.ConstructorArguments.Any())
