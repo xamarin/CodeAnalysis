@@ -48,14 +48,9 @@ namespace RequiresSuperAttribute
 			context.EnableConcurrentExecution ();
 			context.RegisterOperationBlockAction ((codeBlockContext) => {
 				// returns if the code block isn't an overridden method
-<<<<<<< HEAD
-				var method = (IMethodSymbol)codeBlockContext.OwningSymbol;
+				var method = codeBlockContext.OwningSymbol as IMethodSymbol;
 				if (method == null || !method.IsOverride)
                     return;
-=======
-				var method = codeBlockContext.OwningSymbol as IMethodSymbol;
-				if (method == null || !method.IsOverride) { return; }
->>>>>>> c0eec4abacee0fcb234d420a88f6ecb0a1dbe909
 
 				// seeing if the [RequiresSuper] attribute is there
 				var baseType = method.ContainingType.BaseType;
