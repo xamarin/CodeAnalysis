@@ -7,21 +7,25 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
-using AttributeAnalyzer.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using Xamarin.MacDev;
 
-namespace AttributeAnalyzer {
+namespace Xamarin.CodeAnalysis.Apple {
 	[DiagnosticAnalyzer (LanguageNames.CSharp)]
 	public class AttributeAnalyzerAnalyzer : DiagnosticAnalyzer {
-		const string ConfigFileName = "Info.plist";
+        public const string AdviceDiagnosticId = "XIA1001";
+        public const string IntroducedDiagnosticId = "XIA1002";
+        public const string DeprecatedDiagnosticId = "XIA1003";
+
+
+        const string ConfigFileName = "Info.plist";
 		const string Category = "Notifications";
 
 		static readonly DiagnosticDescriptor adviceRule = new DiagnosticDescriptor (
-		    "XI0001",
+            AdviceDiagnosticId,
 		    "Notifies you with advice on how to use Apple APIs",
 		    "{0}",
 		    Category,
@@ -30,7 +34,7 @@ namespace AttributeAnalyzer {
 		);
 
 		static readonly DiagnosticDescriptor introducedRule = new DiagnosticDescriptor (
-		    "XI0002",
+            IntroducedDiagnosticId,
 		    "Notifies you if you are using newer Apple APIs when targeting an older OS version",
 		    "{0}",
 		    Category,
@@ -40,7 +44,7 @@ namespace AttributeAnalyzer {
 		);
 
 		static readonly DiagnosticDescriptor deprecatedRule = new DiagnosticDescriptor (
-		    "XI0003",
+            DeprecatedDiagnosticId,
 		    "Notifies you when using a deprecated, obsolete or unavailable Apple API",
 		    "{0}",
 		    Category,
@@ -87,8 +91,13 @@ namespace AttributeAnalyzer {
 
 		void OnCompilationStart (CompilationStartAnalysisContext compilationContext)
 		{
-            
-          AdditionalText infoPlistFilePath = compilationContext.Options.AdditionalFiles.FirstOrDefault (f => Path.GetFileName (f.Path) == ConfigFileName);
+            AdditionalText infoPlistFilePath = null;
+            foreach (var f in compilationContext.Options.AdditionalFiles)
+            {
+                if (Path.GetFileName(f.Path) == ConfigFileName)
+                    infoPlistFilePath = f;
+            }
+          //AdditionalText infoPlistFilePath = compilationContext.Options.AdditionalFiles.FirstOrDefault (f => Path.GetFileName (f.Path) == ConfigFileName);
 
             if (infoPlistFilePath == null)
                 return;
@@ -197,26 +206,6 @@ namespace AttributeAnalyzer {
 
 			Version.TryParse (minimumOSNumber, out Version vers);
 			return vers;
-		}
-	}
-}
-
-namespace AttributeAnalyzer.Extensions {
-
-	public static class MyExtensions {
-
-		public static ISymbol GetSymbol (this IOperation operation)
-		{
-			switch (operation) {
-			case IMemberReferenceOperation memberReference:
-				return memberReference.Member;
-			case IInvocationOperation invocation:
-				return invocation.TargetMethod;
-			case IObjectCreationOperation creation:
-				return creation.Constructor;
-			default:
-				return null;
-			}
 		}
 	}
 }

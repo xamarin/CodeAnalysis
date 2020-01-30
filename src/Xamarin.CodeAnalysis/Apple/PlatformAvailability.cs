@@ -4,7 +4,8 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace AttributeAnalyzer {
+namespace Xamarin.CodeAnalysis.Apple
+{
 	[Flags]
 	public enum PlatformArchitecture : byte {
 		None = 0x00,

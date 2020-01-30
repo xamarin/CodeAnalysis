@@ -1,9 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
-using System.IO;
 
-namespace AttributeAnalyzer {
-	public static class PlatformAvailabilityExtensions {
+namespace Xamarin.CodeAnalysis.Apple
+{
+    public static class PlatformAvailabilityExtensions {
 		public static PlatformAvailability Merge (this PlatformAvailability availability, AttributeData attr)
 		{
 			if (attr.AttributeClass.ContainingNamespace.Name != "ObjCRuntime")
