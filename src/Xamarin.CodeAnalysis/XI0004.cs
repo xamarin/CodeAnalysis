@@ -122,13 +122,13 @@ namespace RequiresSuperAttribute
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var diagnostic = context.Diagnostics.First();
+            var diagnostic = context.Diagnostics.FirstOrDefault();
             var diagnosticSpan = diagnostic.Location.SourceSpan;
 
             // Find the method declaration identified by the diagnostic.
             var methodDeclaration =
                 root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf()
-                .OfType<MethodDeclarationSyntax>().First();
+                .OfType<MethodDeclarationSyntax>().FirstOrDefault;
 
             // Register a code action that will invoke the fix.
             context.RegisterCodeFix(CodeAction.Create(Title, c => FixSuperAsync(context.Document, methodDeclaration, c), equivalenceKey: Title), diagnostic);
