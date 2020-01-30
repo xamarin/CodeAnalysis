@@ -50,7 +50,7 @@ namespace RequiresSuperAttribute
 				// returns if the code block isn't an overridden method
 				var method = codeBlockContext.OwningSymbol as IMethodSymbol;
 				if (method == null || !method.IsOverride)
-                    return;
+					return;
 
 				// seeing if the [RequiresSuper] attribute is there
 				var baseType = method.ContainingType.BaseType;
@@ -65,36 +65,36 @@ namespace RequiresSuperAttribute
 					{
 						//skips if the operation isn't base.___ or return ___; 
 						if (exp.Kind != OperationKind.ExpressionStatement && exp.Kind != OperationKind.Return)
-                            continue;
+							continue;
 
 						foreach (var child in exp.Children) {
 							// skips if it's not an Invocation Operation
 							if (child.Kind != OperationKind.Invocation) 
-                                continue;
+								continue;
 							var invocationOp = (IInvocationOperation)child;
 							var instance = invocationOp.Instance;
 							if (instance == null) // FIXME: this is the void foo () => . . .case; make this register a diagnostic (the code fix currently throws an error if the diagnostic is registered)
-                                return;
+								return;
 							// skips if the operation doesn't contain base
 							if (instance.Kind != OperationKind.InstanceReference)
-                                continue;
+								continue;
 							var instanceOp = (IInstanceReferenceOperation)instance;
 
 							// checks if in the base.[method]() call, [method] matches the one in the method's signature
 							if (instanceOp.ReferenceKind != InstanceReferenceKind.ContainingTypeInstance)
-                                continue;
+								continue;
 							var invokedMethod = invocationOp.TargetMethod;
-                            if (invokedMethod.Equals(method.OverriddenMethod))
-                            {
-                                return;
-                            }
-                        }
+							if (invokedMethod.Equals(method.OverriddenMethod))
+							{
+								return;
+							}
+						}
 					}
 				}
 				//adds the diagnostic if we don't find base.method() or return base.method()
 				var location = codeBlockContext.OwningSymbol.Locations.FirstOrDefault ();
 				if (location == null)
-                    return;
+					return;
 				var diagnostic = Diagnostic.Create (Rule, location, method.Name);
 				codeBlockContext.ReportDiagnostic (diagnostic);
 			});

@@ -55,8 +55,8 @@ namespace RequiresSuperAttribute
 			//Find the node to fix.
 			var semanticModel = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 			var memberSymbol = semanticModel.GetDeclaredSymbol (methodDeclaration) as IMethodSymbol;
-            if (memberSymbol == null)
-                return document;
+			if (memberSymbol == null)
+				return document;
 
 			//Generate the new base.[methodName]([arguments]) block. If the method needs to return the base call,
 			//it generates return base.[methodName]([arguments])
