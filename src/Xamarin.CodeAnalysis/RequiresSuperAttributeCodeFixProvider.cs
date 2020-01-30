@@ -79,7 +79,7 @@ namespace RequiresSuperAttribute
 			BlockSyntax methodDeclarationBlock = methodDeclaration.Body.AddStatements (blockLiteral);
 
 			//Swap new node into syntax tree.
-			var root = await document.GetSyntaxRootAsync ();
+			var root = await document.GetSyntaxRootAsync ().ConfigureAwait (false);
 			var newRoot = root.ReplaceNode (methodDeclaration.Body, methodDeclarationBlock);
 			var newDocument = document.WithSyntaxRoot (newRoot);
 
