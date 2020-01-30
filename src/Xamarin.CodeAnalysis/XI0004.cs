@@ -150,6 +150,8 @@ namespace RequiresSuperAttribute
             //      trivia of the method body block, but we should consider investigating if this behaves as expected when the IDE is set to spaces vs
             //      tabs / different numbers of spaces per tab
             var returnString = memberSymbol.ReturnsVoid ? "" : "return ";
+            if (memberSymbol == null)
+                return document;
             var parametersString = string.Join(",", memberSymbol.Parameters.Select((p) => p.Name)); //creates a string of the method's passed-in arguments separated by commas
             var newLiteral = SyntaxFactory.ParseStatement($"{returnString} base.{memberSymbol.Name} ({parametersString});")
               .WithLeadingTrivia(methodDeclaration.Body.GetLeadingTrivia().Add(SyntaxFactory.Tab))
