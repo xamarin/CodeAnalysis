@@ -22,15 +22,16 @@ using System.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RequiresSuperAttribute
+namespace Xamarin.CodeAnalysis
+
 {
 	/// <summary>
 	/// Analyzer that reports diagnostics for all methods with the [RequiresSuper] attribute which are overridden without a base.[methodname]() call in the method body
 	/// </summary>
 	[DiagnosticAnalyzer (LanguageNames.CSharp)]
-	public class XI0004 : DiagnosticAnalyzer
+	public class XIA1004RequiresSuper : DiagnosticAnalyzer
 	{
-		public static readonly string DiagnosticId = "XI0004";
+		public static readonly string DiagnosticId = "XI0004RequiresSuperAttribute";
 
 		static readonly DiagnosticDescriptor Rule =
 		new DiagnosticDescriptor (
@@ -106,15 +107,15 @@ namespace RequiresSuperAttribute
 		}
 
 	}
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(RequiresSuperAnalyzerCodeFixProvider))]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(XIA1004CodeFixProvider))]
     [Shared]
-    public class RequiresSuperAnalyzerCodeFixProvider : CodeFixProvider
+    class XIA1004CodeFixProvider : CodeFixProvider
     {
         const string Title = "Add base method call";
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(XI0004.DiagnosticId); }
+            get { return ImmutableArray.Create(XIA1004RequiresSuper.DiagnosticId); }
         }
 
         public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
@@ -128,7 +129,7 @@ namespace RequiresSuperAttribute
             // Find the method declaration identified by the diagnostic.
             var methodDeclaration =
                 root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf()
-                .OfType<MethodDeclarationSyntax>().FirstOrDefault;
+                .OfType<MethodDeclarationSyntax>().FirstOrDefault();
 
             // Register a code action that will invoke the fix.
             context.RegisterCodeFix(CodeAction.Create(Title, c => FixSuperAsync(context.Document, methodDeclaration, c), equivalenceKey: Title), diagnostic);
