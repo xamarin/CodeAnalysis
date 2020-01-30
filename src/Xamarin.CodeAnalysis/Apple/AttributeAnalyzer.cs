@@ -2,24 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Xml;
-using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Operations;
-using Xamarin.MacDev;
 
-namespace Xamarin.CodeAnalysis.Apple {
-	[DiagnosticAnalyzer (LanguageNames.CSharp)]
+namespace Xamarin.CodeAnalysis.Apple
+{
+    [DiagnosticAnalyzer (LanguageNames.CSharp)]
 	public class AttributeAnalyzerAnalyzer : DiagnosticAnalyzer {
         public const string AdviceDiagnosticId = "XIA1001";
         public const string IntroducedDiagnosticId = "XIA1002";
         public const string DeprecatedDiagnosticId = "XIA1003";
-
 
         const string ConfigFileName = "Info.plist";
 		const string Category = "Notifications";

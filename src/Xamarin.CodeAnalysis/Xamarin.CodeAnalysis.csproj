@@ -32,9 +32,4 @@
     <None Update="*.targets" Condition="'$(ExcludeTargets)' != 'true'" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Xamarin.CodeAnalysis.ImportAfter.targets" VSIXSubPathOverride="Current\Microsoft.Common.Targets\ImportAfter" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\..\xamarin-macios\external\Xamarin.MacDev\Xamarin.MacDev\PListObject.cs" />
-  </ItemGroup>
-
 </Project>
