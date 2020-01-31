@@ -126,12 +126,16 @@ namespace Xamarin.CodeAnalysis
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.FirstOrDefault();
+            if (diagnostic == null)
+                        return;
             var diagnosticSpan = diagnostic.Location.SourceSpan;
 
             // Find the method declaration identified by the diagnostic.
             var methodDeclaration =
                 root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf()
                 .OfType<MethodDeclarationSyntax>().FirstOrDefault();
+            if (methodDeclaration == null)
+                        return;
 
             // Register a code action that will invoke the fix.
             context.RegisterCodeFix(CodeAction.Create(Title, c => FixSuperAsync(context.Document, methodDeclaration, c), equivalenceKey: Title), diagnostic);
