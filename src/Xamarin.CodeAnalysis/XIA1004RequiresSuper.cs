@@ -111,7 +111,7 @@ namespace Xamarin.CodeAnalysis
     }
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(XIA1004CodeFixProvider))]
     [Shared]
-    class XIA1004CodeFixProvider : CodeFixProvider
+    internal class XIA1004CodeFixProvider : CodeFixProvider
     {
         const string Title = "Add base method call";
 
@@ -127,7 +127,7 @@ namespace Xamarin.CodeAnalysis
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
             var diagnostic = context.Diagnostics.FirstOrDefault();
             if (diagnostic == null)
-                        return;
+                return;
             var diagnosticSpan = diagnostic.Location.SourceSpan;
 
             // Find the method declaration identified by the diagnostic.
@@ -135,7 +135,7 @@ namespace Xamarin.CodeAnalysis
                 root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf()
                 .OfType<MethodDeclarationSyntax>().FirstOrDefault();
             if (methodDeclaration == null)
-                        return;
+                return;
 
             // Register a code action that will invoke the fix.
             context.RegisterCodeFix(CodeAction.Create(Title, c => FixSuperAsync(context.Document, methodDeclaration, c), equivalenceKey: Title), diagnostic);
