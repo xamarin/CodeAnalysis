@@ -111,7 +111,7 @@ namespace Xamarin.CodeAnalysis
     }
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(XIA1004CodeFixProvider))]
     [Shared]
-    internal class XIA1004CodeFixProvider : CodeFixProvider
+    class XIA1004CodeFixProvider : CodeFixProvider
     {
         const string Title = "Add base method call";
 
