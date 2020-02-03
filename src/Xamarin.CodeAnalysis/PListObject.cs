@@ -353,7 +353,8 @@ namespace Xamarin.CodeAnalysis
 
         public static Task<PObject> FromFileAsync(string fileName)
         {
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 bool isBinary;
                 return FromFile(fileName, out isBinary);
             });
@@ -811,7 +812,8 @@ namespace Xamarin.CodeAnalysis
 
         public new static Task<PDictionary> FromFileAsync(string fileName)
         {
-            return Task.Run(() => {
+            return Task.Run(() =>
+            {
                 bool isBinary;
                 return FromFile(fileName, out isBinary);
             });
