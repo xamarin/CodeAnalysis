@@ -14,6 +14,10 @@ namespace Xamarin.CodeAnalysis.Apple
         public const string IntroducedDiagnosticId = "XIA1002";
         public const string DeprecatedDiagnosticId = "XIA1003";
 
+        const string AdviceHelpLink = "https://github.com/xamarin/CodeAnalysis/blob/master/docs/XIA1001.md";
+        const string IntroducedHelpLink = "https://github.com/xamarin/CodeAnalysis/blob/master/docs/XIA1002.md";
+        const string DeprecatedHelpLink = "https://github.com/xamarin/CodeAnalysis/blob/master/docs/XIA1003.md";
+
         const string ConfigFileName = "Info.plist";
 		const string Category = "Notifications";
 
@@ -23,7 +27,8 @@ namespace Xamarin.CodeAnalysis.Apple
 		    "{0}",
 		    Category,
 		    DiagnosticSeverity.Info,
-		    true
+		    true,
+            AdviceHelpLink
 		);
 
 		static readonly DiagnosticDescriptor introducedRule = new DiagnosticDescriptor (
@@ -33,8 +38,9 @@ namespace Xamarin.CodeAnalysis.Apple
 		    Category,
 		    DiagnosticSeverity.Info,
 		    true,
-		    "This rule is comparing the versions of the API's introduced attribute and the minimum deployment target defined in the Info.plist."
-		);
+		    "This rule is comparing the versions of the API's introduced attribute and the minimum deployment target defined in the Info.plist.",
+            IntroducedHelpLink
+        );
 
 		static readonly DiagnosticDescriptor deprecatedRule = new DiagnosticDescriptor (
             DeprecatedDiagnosticId,
@@ -42,8 +48,9 @@ namespace Xamarin.CodeAnalysis.Apple
 		    "{0}",
 		    Category,
 		    DiagnosticSeverity.Info,
-		    true
-		);
+		    true,
+            DeprecatedHelpLink
+        );
 
 		static readonly ImmutableArray<OperationKind> operationKindsOfInterest = ImmutableArray.Create (
 		    OperationKind.EventReference,
