@@ -12,10 +12,10 @@ namespace Xamarin.CodeAnalysis
         {
             var extensions = typeof(Workspace).Assembly.GetType("Microsoft.CodeAnalysis.Shared.Extensions.DocumentExtensions", true);
             var method = extensions.GetMethod(
-                nameof(GetSemanticModelForNodeAsync), 
-                BindingFlags.Public | BindingFlags.Static, 
-                null, 
-                new[] { typeof(Document), typeof(SyntaxNode), typeof(CancellationToken) }, 
+                nameof(GetSemanticModelForNodeAsync),
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(Document), typeof(SyntaxNode), typeof(CancellationToken) },
                 null);
 
             return (Task<SemanticModel>)method.Invoke(null, new object[] { document, node, cancellationToken });
