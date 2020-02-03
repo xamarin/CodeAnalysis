@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
-
-namespace Xamarin.CodeAnalysis.Apple
+﻿namespace Xamarin.CodeAnalysis.Apple
 {
     public static class PlatformAvailabilityExtensions
     {
