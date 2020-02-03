@@ -30,6 +30,17 @@
 
 // Binary format reference: http://opensource.apple.com/source/CF/CF-635.21/CFBinaryPList.c
 
+using System;
+using System.IO;
+using System.Xml;
+using System.Text;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Security;
+using System.Threading.Tasks;
+
 #if POBJECT_MONOMAC
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;

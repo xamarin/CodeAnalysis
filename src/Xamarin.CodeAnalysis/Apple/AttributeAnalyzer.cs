@@ -1,4 +1,13 @@
-﻿namespace Xamarin.CodeAnalysis.Apple
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+
+namespace Xamarin.CodeAnalysis.Apple
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AttributeAnalyzerAnalyzer : DiagnosticAnalyzer

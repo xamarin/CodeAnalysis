@@ -1,4 +1,10 @@
-﻿namespace Xamarin.CodeAnalysis.Apple
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace Xamarin.CodeAnalysis.Apple
 {
     [Flags]
     public enum PlatformArchitecture : byte
