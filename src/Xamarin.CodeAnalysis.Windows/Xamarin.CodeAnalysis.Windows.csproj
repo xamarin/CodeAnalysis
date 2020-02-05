@@ -51,7 +51,7 @@
       <!-- For inclusion in the VSIX install path, we don't want the .targets -->
       <AdditionalProperties>ExcludeTargets=true</AdditionalProperties>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj" Condition="$(CI)">
+    <ProjectReference Include="..\Xamarin.CodeAnalysis\Xamarin.CodeAnalysis.csproj" Condition="$(CI) or '$(BuildingInsideVisualStudio)' != 'true'">
       <AdditionalProperties>BuildReference=false</AdditionalProperties>
       <Name>Xamarin.CodeAnalysis</Name>
       <BuildProject>false</BuildProject>
@@ -116,7 +116,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="AfterBuild" Condition="!$(CI)" DependsOnTargets="IsAdministrator;CollectLinkItems;ReplaceLinkItems" />
+  <Target Name="SymLink" Condition="!$(CI)" AfterTargets="AfterBuild" DependsOnTargets="IsAdministrator;CollectLinkItems;ReplaceLinkItems" />
   
   <Target Name="IsAdministrator">
     <IsAdministrator>
@@ -133,12 +133,13 @@
     <VSIXSourceItem>
       <VSIXSubPath />
       <SymLink />
+      <InstallRoot />
     </VSIXSourceItem>
   </ItemDefinitionGroup>
     
-  <Target Name="CollectLinkItems" DependsOnTargets="IsAdministrator;GetVsixDeploymentPath;GetVsixSourceItems" Condition="'$(IsAdministrator)' == 'true' and !$(CI)">
-    <ItemGroup>
-      <MkLinkCandidate Include="@(VSIXSourceItem -> '$(MSBuildExtensionsPath)\%(VSIXSubPath)\%(Filename)%(Extension)')" Condition="'%(SymLink)' == 'true'">
+  <Target Name="CollectLinkItems" DependsOnTargets="IsAdministrator;GetVsixDeploymentPath;GetVsixSourceItems">
+    <ItemGroup Condition="'$(IsAdministrator)' == 'true'">
+      <MkLinkCandidate Include="@(VSIXSourceItem -> '$(MSBuildExtensionsPath)\%(VSIXSubPath)\%(Filename)%(Extension)')" Condition="'%(InstallRoot)' == 'MSBuild'">
         <LinkTarget>$(VsixDeploymentPath)\%(VSIXSubPath)\%(Filename)%(Extension)</LinkTarget>
       </MkLinkCandidate>
       <MkLinkCandidate Condition="Exists('%(FullPath)')">
@@ -149,8 +150,10 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="ReplaceLinkItems" Inputs="@(MkLinkSource)" Outputs="%(MkLinkSource.Identity)-BATCH" Condition="'@(MkLinkSource)' != '' And '$(IsAdministrator)' == 'true' and !$(CI)">
+  <Target Name="ReplaceLinkItems" Inputs="@(MkLinkSource)" Outputs="%(MkLinkSource.Identity)-BATCH" Condition="'@(MkLinkSource)' != ''">
     <Exec Command="del &quot;%(MkLinkSource.FullPath)&quot;" EchoOff="true" Condition="Exists('%(MkLinkSource.FullPath)')" />
+    <Exec Command="del &quot;%(MkLinkSource.FullPath)&quot;" EchoOff="true" Condition="Exists('%(MkLinkSource.FullPath)')" />
+    <MakeDir Directories="%(MkLinkSource.RootDir)%(MkLinkSource.Directory)" Condition="!Exists('%(MkLinkSource.RootDir)%(MkLinkSource.Directory)')" />
     <Exec Command="mklink &quot;%(MkLinkSource.Identity)&quot; &quot;%(MkLinkSource.LinkTarget)&quot;" ConsoleToMSBuild="true" EchoOff="true" Condition="Exists('%(MkLinkSource.RootDir)%(MkLinkSource.Directory)')">
       <Output TaskParameter="ConsoleOutput" ItemName="MkLinked" />
     </Exec>
