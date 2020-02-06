@@ -5,9 +5,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <!-- Allow our additional item metadata to propagate to the calling project -->
     <MSBuildDisableGetCopyToOutputDirectoryItemsOptimization>true</MSBuildDisableGetCopyToOutputDirectoryItemsOptimization>
+
     <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <PackageId>Xamarin.CodeAnalysis</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -59,6 +59,12 @@
     </ReferenceCopyLocalPaths>
   </ItemDefinitionGroup>
 
+  <PropertyGroup Label="NuGet Pack">
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <IsPackable Condition="'$(PackageId)' != ''">true</IsPackable>
+    <IsPackable Condition="'$(PackageId)' == ''">false</IsPackable>
+  </PropertyGroup>
+
   <Target Name="_AfterPack" AfterTargets="Pack" DependsOnTargets="CreateVsixContainer" />
 
   <Target Name="_BeforePack" BeforeTargets="Pack">
