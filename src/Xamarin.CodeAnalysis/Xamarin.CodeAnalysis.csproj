@@ -2,13 +2,17 @@
   <Sdk Name="Microsoft.Build.CentralPackageVersions" />
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <!-- Allow our additional item metadata to propagate to the calling project -->
     <MSBuildDisableGetCopyToOutputDirectoryItemsOptimization>true</MSBuildDisableGetCopyToOutputDirectoryItemsOptimization>
+
+    <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <PackageId>Xamarin.CodeAnalysis</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GuiLabs.Language.Xml" CopyLocal="true" IncludeInVSIX="true" />
+    <PackageReference Include="GuiLabs.Language.Xml" CopyLocal="true" IncludeInVSIX="true" Pack="true" PackagePath="build\$(TargetFramework)" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" />
     <InternalsVisibleTo Include="Xamarin.CodeAnalysis.Tests" />
   </ItemGroup>
@@ -29,8 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="*.targets" Condition="'$(ExcludeTargets)' != 'true'" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Xamarin.CodeAnalysis.ImportAfter.targets" VSIXSubPathOverride="Current\Microsoft.Common.Targets\ImportAfter" />
+    <None Remove="*.targets" />
+    <Content Include="*.targets" Exclude="Xamarin.CodeAnalysis.ImportAfter.targets" Condition="'$(ExcludeTargets)' != 'true'" PackagePath="build\$(TargetFramework)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

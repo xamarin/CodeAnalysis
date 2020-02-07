@@ -23,9 +23,14 @@
     <!-- We don't want to run code analysis for ourselves. -->
     <ImportXamarinCodeAnalysisTargets>false</ImportXamarinCodeAnalysisTargets>
     <DefineConstants Condition="$(CI)">CI;$(DefineConstants)</DefineConstants>
+
+    <PackageOutputPath Condition="'$(BUILD_ARTIFACTSTAGINGDIRECTORY)' != ''">$(BUILD_ARTIFACTSTAGINGDIRECTORY)</PackageOutputPath>
+    <GeneratePackageOnBuild>$(CI)</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <!-- Redeclared by GitInfo -->
   <Target Name="GitVersion" />
+  <!-- Redeclared by VSSDK -->
+  <Target Name="CreateVsixContainer" />
 
 </Project>

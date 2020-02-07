@@ -28,6 +28,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{54758F73-0
 	ProjectSection(SolutionItems) = preProject
 		docs\XAA1001.md = docs\XAA1001.md
 		docs\XAA1002.md = docs\XAA1002.md
+		docs\XIA1001.md = docs\XIA1001.md
+		docs\XIA1002.md = docs\XIA1002.md
+		docs\XIA1003.md = docs\XIA1003.md
 	EndProjectSection
 EndProject
 Global

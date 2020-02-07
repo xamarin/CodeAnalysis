@@ -12,7 +12,7 @@
       <GitSemVerDashLabel Condition="'$(SYSTEM_PULLREQUEST_PULLREQUESTNUMBER)' != ''">-pr$(SYSTEM_PULLREQUEST_PULLREQUESTNUMBER)</GitSemVerDashLabel>
     </PropertyGroup>
 
-    <ItemGroup>
+    <ItemGroup Condition="$(CI)">
       <VersionMetadata Include="sha.$(GitCommit)"/>
       <VersionMetadata Condition="$(CI)" 
                        Include="vsts.$(BUILD_BUILDID)"/>
@@ -59,32 +59,54 @@
     </ReferenceCopyLocalPaths>
   </ItemDefinitionGroup>
 
-  <Target Name="AugmentPackageReferenceAssemblies" Inputs="@(PackageReference)" Outputs="%(PackageReference.Identity)-BATCH"
-          AfterTargets="ResolveAssemblyReferences" DependsOnTargets="ResolveAssemblyReferences">
+  <PropertyGroup Label="NuGet Pack">
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <IsPackable Condition="'$(PackageId)' != ''">true</IsPackable>
+    <IsPackable Condition="'$(PackageId)' == ''">false</IsPackable>
+  </PropertyGroup>
+
+  <Target Name="_AfterPack" AfterTargets="Pack" DependsOnTargets="CreateVsixContainer" />
+
+  <Target Name="_BeforePack" BeforeTargets="Pack">
     <PropertyGroup>
-      <PackageId>%(PackageReference.Identity)</PackageId>
-      <CopyLocal>%(PackageReference.CopyLocal)</CopyLocal>
-      <Private>%(PackageReference.Private)</Private>
-      <IncludeInVSIX>%(PackageReference.IncludeInVSIX)</IncludeInVSIX>
-      <NewMetadata>$(CopyLocal)$(Private)$(IncludeInVSIX)</NewMetadata>
+      <CreateVsixContainer>true</CreateVsixContainer>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="AugmentPackageReferenceAssemblies" Inputs="@(PackageReference)" Outputs="%(PackageReference.Identity)-BATCH"
+          BeforeTargets="$(GenerateNuspecDependsOn)" AfterTargets="ResolveAssemblyReferences" DependsOnTargets="ResolveAssemblyReferences">
+    <PropertyGroup>
+      <_PackageId>%(PackageReference.Identity)</_PackageId>
+      <_CopyLocal>%(PackageReference.CopyLocal)</_CopyLocal>
+      <_Private>%(PackageReference.Private)</_Private>
+      <_IncludeInVSIX>%(PackageReference.IncludeInVSIX)</_IncludeInVSIX>
+      <_NewMetadata>$(_CopyLocal)$(_Private)$(_IncludeInVSIX)</_NewMetadata>
+
+      <_Pack>%(PackageReference.Pack)</_Pack>
+      <_PackagePath>%(PackageReference.PackagePath)</_PackagePath>
     </PropertyGroup>
 
-    <ItemGroup Condition="'$(NewMetadata)' != ''">
-      <NuGetReferencePath Include="@(ReferencePath)" Condition="'%(NuGetPackageId)' == '$(PackageId)'">
-        <CopyLocal Condition="'$(CopyLocal)' != ''">$(CopyLocal)</CopyLocal>
-        <Private Condition="'$(Private)' != ''">$(Private)</Private>
-        <IncludeInVSIX Condition="'$(IncludeInVSIX)' != ''">$(IncludeInVSIX)</IncludeInVSIX>
+    <ItemGroup Condition="'$(_NewMetadata)' != ''">
+      <NuGetReferencePath Include="@(ReferencePath)" Condition="'%(NuGetPackageId)' == '$(_PackageId)'">
+        <CopyLocal Condition="'$(_CopyLocal)' != ''">$(_CopyLocal)</CopyLocal>
+        <Private Condition="'$(_Private)' != ''">$(_Private)</Private>
+        <IncludeInVSIX Condition="'$(_IncludeInVSIX)' != ''">$(_IncludeInVSIX)</IncludeInVSIX>
       </NuGetReferencePath>
       <ReferencePath Remove="@(NuGetReferencePath)" />
       <ReferencePath Include="@(NuGetReferencePath)" />
 
-      <NuGetReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths)" Condition="'%(NuGetPackageId)' == '$(PackageId)'">
-        <CopyLocal Condition="'$(CopyLocal)' != ''">$(CopyLocal)</CopyLocal>
-        <Private Condition="'$(Private)' != ''">$(Private)</Private>
-        <IncludeInVSIX Condition="'$(IncludeInVSIX)' != ''">$(IncludeInVSIX)</IncludeInVSIX>
+      <NuGetReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths)" Condition="'%(NuGetPackageId)' == '$(_PackageId)'">
+        <CopyLocal Condition="'$(_CopyLocal)' != ''">$(_CopyLocal)</CopyLocal>
+        <Private Condition="'$(_Private)' != ''">$(_Private)</Private>
+        <IncludeInVSIX Condition="'$(_IncludeInVSIX)' != ''">$(_IncludeInVSIX)</IncludeInVSIX>
       </NuGetReferenceCopyLocalPaths>
       <ReferenceCopyLocalPaths Remove="@(NuGetReferenceCopyLocalPaths)" />
       <ReferenceCopyLocalPaths Include="@(NuGetReferenceCopyLocalPaths)" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(_Pack)' == 'true'">
+      <_PackageFiles Include="@(ReferencePath)" Condition="'%(NuGetPackageId)' == '$(_PackageId)'" PackagePath="$(_PackagePath)" />
+      <_PackageFiles Include="@(ReferenceCopyLocalPaths)" Condition="'%(NuGetPackageId)' == '$(_PackageId)'" PackagePath="$(_PackagePath)" />
     </ItemGroup>
   </Target>
 
