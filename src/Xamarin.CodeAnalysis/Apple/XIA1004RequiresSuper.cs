@@ -34,7 +34,6 @@ namespace Xamarin.CodeAnalysis
         public static readonly string DiagnosticId = "XI0004RequiresSuperAttribute";
         const string HelpLink = "https://github.com/xamarin/CodeAnalysis/blob/master/docs/XIA1004.md";
 
-
         static readonly DiagnosticDescriptor Rule =
         new DiagnosticDescriptor(
             DiagnosticId,
