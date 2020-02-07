@@ -32,6 +32,8 @@ namespace Xamarin.CodeAnalysis
     public class XIA1004RequiresSuper : DiagnosticAnalyzer
     {
         public static readonly string DiagnosticId = "XI0004RequiresSuperAttribute";
+        const string HelpLink = "https://github.com/xamarin/CodeAnalysis/blob/master/docs/XIA1004.md";
+
 
         static readonly DiagnosticDescriptor Rule =
         new DiagnosticDescriptor(
@@ -40,7 +42,8 @@ namespace Xamarin.CodeAnalysis
             "Overriding the {0} method requires a call to the overridden method",
             "Notifications",
             DiagnosticSeverity.Info,
-            isEnabledByDefault: true
+            isEnabledByDefault: true,
+            HelpLink
             );
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
