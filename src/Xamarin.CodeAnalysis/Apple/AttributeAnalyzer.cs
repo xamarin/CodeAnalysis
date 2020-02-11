@@ -186,12 +186,7 @@ namespace Xamarin.CodeAnalysis.Apple
             {
                 if (attr.AttributeClass == adviceAttribute && attr.ConstructorArguments.Length > 0)
                 {
-                    var message = attr.ConstructorArguments[0].Value?.ToString();
-
-                    if (message.Equals("Overriding this method requires a call to the overriden method."))
-                        continue;
-
-                    AddIssue(context, adviceRule, message);
+                    AddIssue(context, adviceRule, attr.ConstructorArguments[0].Value?.ToString());
                 }
                 else
                 {
