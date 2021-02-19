@@ -10,7 +10,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" />
     <PackageReference Include="Microsoft.CodeAnalysis.Remote.ServiceHub" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Remote.Workspaces" />
   </ItemGroup>
 
 </Project>
