@@ -1,7 +1,21 @@
-queue: VSEngSS-MicroBuild2019
+trigger:
+  branches:
+    include:
+    - master
+
+pr:
+  autoCancel: true
+  branches:
+    include:
+    - master
+
+jobs:
+- job: Build
+  timeoutInMinutes: 10
+  pool:
+    name: VSEngSS-MicroBuild2019
 
 steps:
-
 - checkout: self
   clean: true
 
