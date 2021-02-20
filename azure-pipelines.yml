@@ -19,6 +19,11 @@ jobs:
   - checkout: self
     clean: true
 
+  - task: NuGetAuthenticate@0
+    displayName: Authenticate NuGet feeds
+    inputs:
+      forceReinstallCredentialProvider: true
+
   - task: MSBuild@1
     displayName: Restore
     inputs:
