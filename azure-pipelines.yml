@@ -24,19 +24,17 @@ stages:
     - checkout: self
       clean: true
 
-    - task: MSBuild@1
-      displayName: Restore
+    - task: NuGetAuthenticate@0
+      displayName: Authenticate NuGet feeds
       inputs:
-        solution: Xamarin.CodeAnalysis.sln
-        configuration: Release
-        msbuildArguments: /t:Restore /bl:"$(Build.ArtifactStagingDirectory)\restore.binlog" /m
+        forceReinstallCredentialProvider: true
 
     - task: MSBuild@1
       displayName: Build
       inputs:
         solution: Xamarin.CodeAnalysis.sln
         configuration: Release
-        msbuildArguments: /bl:"$(Build.ArtifactStagingDirectory)\build.binlog" /p:TargetVsixContainer=$(Build.ArtifactStagingDirectory)\Xamarin.CodeAnalysis.vsix /m
+        msbuildArguments: /restore:true /bl:"$(Build.ArtifactStagingDirectory)\build.binlog" /p:TargetVsixContainer=$(Build.ArtifactStagingDirectory)\Xamarin.CodeAnalysis.vsix /m
 
     - task: VSTest@2
       displayName: Test
