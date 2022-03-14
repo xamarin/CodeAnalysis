@@ -30,11 +30,18 @@ stages:
         forceReinstallCredentialProvider: true
 
     - task: MSBuild@1
+      displayName: Restore
+      inputs:
+        solution: Xamarin.CodeAnalysis.sln
+        configuration: Release
+        msbuildArguments: /t:restore /bl:"$(Build.ArtifactStagingDirectory)\restore.binlog" /m:1
+
+    - task: MSBuild@1
       displayName: Build
       inputs:
         solution: Xamarin.CodeAnalysis.sln
         configuration: Release
-        msbuildArguments: /restore:true /bl:"$(Build.ArtifactStagingDirectory)\build.binlog" /p:TargetVsixContainer=$(Build.ArtifactStagingDirectory)\Xamarin.CodeAnalysis.vsix /m
+        msbuildArguments: /bl:"$(Build.ArtifactStagingDirectory)\build.binlog" /p:TargetVsixContainer=$(Build.ArtifactStagingDirectory)\Xamarin.CodeAnalysis.vsix /m
 
     - task: VSTest@2
       displayName: Test
