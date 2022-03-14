@@ -1,7 +1,7 @@
 ﻿<Project>
 
   <PropertyGroup>
-    <RoslynVersion>3.0.0-beta4-19165-02</RoslynVersion>
+    <RoslynVersion>3.7.0-3.20271.4</RoslynVersion>
   </PropertyGroup>
 
   <ItemGroup>
