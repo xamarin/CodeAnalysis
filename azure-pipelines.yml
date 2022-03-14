@@ -1,36 +1,55 @@
-queue: VSEng-MicroBuildVS2019
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/build/triggers?view=azure-devops
+trigger:
+  batch: false
+  branches:
+    include:
+    - main
 
-steps:
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#pr-triggers
+pr:
+  autoCancel: false
+  branches:
+    include:
+    - main
 
-- checkout: self
-  clean: true
+stages:
+- stage: Windows
+  jobs:
+  - job: Build
+    pool:
+      name: AzurePipelines-EO
+      demands:
+      - ImageOverride -equals AzurePipelinesWindows2019compliant
+    steps:
+    - checkout: self
+      clean: true
 
-- task: MSBuild@1
-  displayName: Restore
-  inputs:
-    solution: Xamarin.CodeAnalysis.sln
-    configuration: Release
-    msbuildArguments: /t:Restore /bl:"$(Build.ArtifactStagingDirectory)\restore.binlog" /m
+    - task: MSBuild@1
+      displayName: Restore
+      inputs:
+        solution: Xamarin.CodeAnalysis.sln
+        configuration: Release
+        msbuildArguments: /t:Restore /bl:"$(Build.ArtifactStagingDirectory)\restore.binlog" /m
 
-- task: MSBuild@1
-  displayName: Build
-  inputs:
-    solution: Xamarin.CodeAnalysis.sln
-    configuration: Release
-    msbuildArguments: /bl:"$(Build.ArtifactStagingDirectory)\build.binlog" /p:TargetVsixContainer=$(Build.ArtifactStagingDirectory)\Xamarin.CodeAnalysis.vsix /m
+    - task: MSBuild@1
+      displayName: Build
+      inputs:
+        solution: Xamarin.CodeAnalysis.sln
+        configuration: Release
+        msbuildArguments: /bl:"$(Build.ArtifactStagingDirectory)\build.binlog" /p:TargetVsixContainer=$(Build.ArtifactStagingDirectory)\Xamarin.CodeAnalysis.vsix /m
 
-- task: VSTest@2
-  displayName: Test
-  inputs:
-    testAssemblyVer2: src\*\bin\*\*.Tests.dll
-    runInParallel: 'true'
-    codeCoverageEnabled: 'true'
-    publishRunAttachments: 'true'
+    - task: VSTest@2
+      displayName: Test
+      inputs:
+        testAssemblyVer2: src\*\bin\*\*.Tests.dll
+        runInParallel: 'true'
+        codeCoverageEnabled: 'true'
+        publishRunAttachments: 'true'
 
-- task: PublishBuildArtifacts@1
-  displayName: Publish Artifact
-  inputs:
-    PathtoPublish: $(Build.ArtifactStagingDirectory)
-    ArtifactName: out
-    ArtifactType: Container
-  condition: always()
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifact
+      inputs:
+        PathtoPublish: $(Build.ArtifactStagingDirectory)
+        ArtifactName: out
+        ArtifactType: Container
+      condition: always()
