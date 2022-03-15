@@ -34,7 +34,7 @@ stages:
       inputs:
         solution: Xamarin.CodeAnalysis.sln
         configuration: Release
-        msbuildArguments: /t:restore /bl:"$(Build.ArtifactStagingDirectory)\restore.binlog" /m:1
+        msbuildArguments: /t:restore /bl:"$(Build.ArtifactStagingDirectory)\restore.binlog"
 
     - task: MSBuild@1
       displayName: Build
